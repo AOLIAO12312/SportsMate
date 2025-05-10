@@ -1,12 +1,20 @@
 package com.sportsmate.pojo;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import javax.persistence.*;
 
-@Data
+@Entity
+@Table(name = "sports")
 public class Sport {
-    @NotNull
-    private Integer id;//主键ID
-    private String name;//运动名称
-    private String description;//运动描述
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    // Getter 和 Setter 省略
 }

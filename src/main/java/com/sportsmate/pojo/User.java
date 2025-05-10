@@ -1,9 +1,8 @@
 package com.sportsmate.pojo;
 
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,52 +13,72 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
-    @NotNull
-    private Integer id;//主键ID
-    private String username;//用户名
-    private Gender gender = Gender.其他;//性别（“男”、“女”、“其他”）
-    private UserType userType = UserType.普通用户;//用户类别（“普通用户”，“教练”，“管理员”）
-    private UserStatus userStatus = UserStatus.正常;//用户状态，正常，警告，封禁
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
+    @Column(nullable = false, unique = true, length = 20)
+    private String username;
 
-    @Pattern(regexp = "^\\S{1,20}$")
-    private String realName;//真实姓名（教练必须填写）
-    private Integer coachedSports;
-    private String profileDescription;//教练个人介绍
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Gender gender = Gender.其他;
 
-    @Pattern(regexp = "^\\+?\\d{1,4}[-\\s]?\\d{1,15}$")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type", nullable = false)
+    private UserType userType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.正常;
+
+    @Column(unique = true, length = 15)
+    @Pattern(regexp = "\\d{6,12}", message = "手机号必须为6到12位数字")
     private String phone;
 
+    @Column(nullable = false)
+    @JsonIgnore
+    private String password;
+
+    @Column(name = "rank_score")
+    private Integer rankScore = 1200;
+
+    @Column(name = "reputation_score")
+    private Integer reputationScore = 100;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    // 以下非必要字段统一忽略 JSON 返回，避免过多冗余数据暴露
 
     @JsonIgnore
-    private String password;//密码
-
-    @NotNull
-    private Integer rankScore;//段位分
-    private Integer reputationScore;//信誉分
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "coach")
-    private Set<AvailableTime> availableTimes;  // 教练的所有空闲时间
+    private Set<AvailableTime> availableTimes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<UserAddress> addresses;  // 用户的所有地址
+    private Set<UserAddress> addresses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<CoachReservation> coachReservations;  // 发起的预约
+    private Set<CoachReservation> coachReservations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "coach")
-    private Set<CoachReservation> reservationsAsCoach;  // 作为教练的预约
+    private Set<CoachReservation> reservationsAsCoach;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<MatchRequest> matchRequests;  // 发起的匹配请求
+    private Set<MatchRequest> matchRequests;
 
-    // 关联成功匹配的用户
+    @JsonIgnore
     @OneToMany(mappedBy = "user1")
-    private List<SuccessfulMatch> successfulMatchesAsUser1;  // 作为用户1参与的所有成功匹配
+    private List<SuccessfulMatch> successfulMatchesAsUser1;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user2")
-    private List<SuccessfulMatch> successfulMatchesAsUser2;  // 作为用户2参与的所有成功匹配
+    private List<SuccessfulMatch> successfulMatchesAsUser2;
 }
