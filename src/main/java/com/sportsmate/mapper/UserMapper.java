@@ -1,6 +1,7 @@
 package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.UserType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -10,7 +11,7 @@ import org.apache.ibatis.annotations.Update;
 public interface UserMapper {
     @Insert("insert into users(username,password,user_type,created_at,updated_at)" +
             "values (#{username},#{password},#{userType},now(),now())")
-    void add(String username, String password,String userType);
+    void add(String username, String password, UserType userType);
 
     @Select("select * from users where username=#{username}")
     User findByUserName(String username);

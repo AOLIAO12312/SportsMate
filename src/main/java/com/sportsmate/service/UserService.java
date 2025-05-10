@@ -1,10 +1,11 @@
 package com.sportsmate.service;
 
 import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.UserType;
 
 public interface UserService {
     //注册用户
-    void register(String username, String passwd,String userType);
+    void register(String username, String passwd, UserType userType);
 
     //根据用户名查询用户
     User findByUserName(String username);

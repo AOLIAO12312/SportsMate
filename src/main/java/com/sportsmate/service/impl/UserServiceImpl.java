@@ -2,6 +2,7 @@ package com.sportsmate.service.impl;
 
 import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.UserType;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.Md5Util;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -19,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public void register(String username, String passwd,String userType) {
+    public void register(String username, String passwd, UserType userType) {
         //加密处理
         String md5String = Md5Util.getMD5String(passwd);
         //添加

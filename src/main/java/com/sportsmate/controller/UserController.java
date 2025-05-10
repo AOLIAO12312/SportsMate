@@ -2,6 +2,7 @@ package com.sportsmate.controller;
 
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.service.CoachProfileService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.JwtUtil;
 import com.sportsmate.utils.Md5Util;
@@ -23,6 +24,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CoachProfileService coachProfileService;
 
     @PostMapping("/register")
     public Result register(String username,String passwd,String userType){
@@ -42,7 +45,12 @@ public class UserController {
         User u = userService.findByUserName(username);
         if(u == null){
             //注册
-            userService.register(username,passwd,userType);
+            userService.register(username,passwd,type);
+            if(type.equals(UserType.教练)){
+                User registerUser = userService.findByUserName(username);
+                Integer registerUserId = registerUser.getId();
+                coachProfileService.add(registerUserId);
+            }
             return Result.success();
         }else{
             return Result.error("用户名已被占用");
