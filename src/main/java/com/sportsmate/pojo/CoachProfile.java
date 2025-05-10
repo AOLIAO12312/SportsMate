@@ -1,6 +1,9 @@
 package com.sportsmate.pojo;
 
+import lombok.Data;
+
 import javax.persistence.*;
+@Data
 @Entity
 @Table(name = "coach_profiles")
 public class CoachProfile {

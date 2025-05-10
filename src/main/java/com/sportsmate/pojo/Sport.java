@@ -1,7 +1,10 @@
 package com.sportsmate.pojo;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "sports")
 public class Sport {
