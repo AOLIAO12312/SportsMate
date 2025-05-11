@@ -44,7 +44,7 @@ public class CoachProfileConverter {
             if (sport == null) {
                 throw new IllegalArgumentException("Sport not found for id: " + entity.getCoachedSports());
             }
-            dto.setCoachedSportName(sport.getName()); // 你需要确保 Sport 有 getName()
+            dto.setCoachedSportName(sport.getSportName()); // 你需要确保 Sport 有 getName()
         }else {
             dto.setCoachedSportName("未设置");
         }

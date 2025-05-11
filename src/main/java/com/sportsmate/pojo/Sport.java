@@ -14,7 +14,7 @@ public class Sport {
     private Integer id;
 
     @Column(nullable = false, length = 100)
-    private String name;
+    private String sportName;
 
     @Column(columnDefinition = "TEXT")
     private String description;

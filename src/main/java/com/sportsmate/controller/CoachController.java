@@ -7,12 +7,14 @@ import com.sportsmate.pojo.Result;
 import com.sportsmate.service.CoachProfileService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/coach")
+@Validated
 public class CoachController {
 
     @Autowired

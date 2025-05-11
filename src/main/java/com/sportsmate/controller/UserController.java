@@ -28,7 +28,7 @@ public class UserController {
     private CoachProfileService coachProfileService;
 
     @PostMapping("/register")
-    public Result register(String username,String passwd,String userType){
+    public Result register(@Pattern(regexp = "^\\S{5,16}$")String username,@Pattern(regexp = "^\\S{5,16}$")String passwd,String userType){
         UserType type;
         // 校验 userType 是否为合法枚举
         try {
