@@ -1,5 +1,7 @@
 package com.sportsmate.controller;
 
+import com.sportsmate.converter.CoachProfileConverter;
+import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.pojo.CoachProfile;
 import com.sportsmate.pojo.Result;
 import com.sportsmate.service.CoachProfileService;
@@ -16,9 +18,18 @@ public class CoachController {
     @Autowired
     private CoachProfileService coachProfileService;
 
-    @PostMapping("/updateProfile")
-    public Result updateCoachProfile(@RequestBody CoachProfile profile) {
-        coachProfileService.updateProfile(profile);
+    @Autowired
+    private CoachProfileConverter coachProfileConverter;
+
+    @PutMapping("/updateProfile")
+    public Result updateCoachProfile(@RequestBody CoachProfileDTO dto) {
+        CoachProfile coachProfile;
+        try{
+            coachProfile = coachProfileConverter.toEntity(dto);
+        }catch (IllegalArgumentException e){
+            return Result.error(e.getMessage());
+        }
+        coachProfileService.updateProfile(coachProfile);
         return Result.success();
     }
 
@@ -27,6 +38,7 @@ public class CoachController {
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         CoachProfile profile = coachProfileService.findByUserId(loginUserId);
-        return Result.success(profile);
+        CoachProfileDTO dto = coachProfileConverter.toDTO(profile);
+        return Result.success(dto);
     }
 }

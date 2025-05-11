@@ -23,7 +23,8 @@ public class CoachProfileServiceImpl implements CoachProfileService {
     public void updateProfile(CoachProfile profile) {
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
-        coachProfileMapper.updateProfile(profile,id);
+        profile.setUserId(id);
+        coachProfileMapper.updateProfile(profile);
     }
 
     @Override

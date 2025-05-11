@@ -12,8 +12,8 @@ public interface CoachProfileMapper {
     @Select("select * from coach_profiles where user_id=#{id}")
     CoachProfile findByUserId(Integer id);
 
-    @Update("update coach_profiles set real_name=#{realName},profile_description=#{profileDescription} where user_id=#{id}")
-    void updateProfile(CoachProfile profile, Integer id);
+    @Update("update coach_profiles set real_name=#{realName},profile_description=#{profileDescription},coached_sports=#{coachedSports} where user_id=#{userId}")
+    void updateProfile(CoachProfile profile);
 
     @Insert("insert into coach_profiles(user_id) values(#{registerUserId})")
     void add(Integer registerUserId);

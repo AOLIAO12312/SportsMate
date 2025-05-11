@@ -19,7 +19,7 @@ public class CoachProfile {
 
     @ManyToOne
     @JoinColumn(name = "coached_sports", nullable = false)
-    private Sport coachedSports;
+    private Integer coachedSports;
 
     @Column(nullable = false)
     private Float rating = 5.0f;
