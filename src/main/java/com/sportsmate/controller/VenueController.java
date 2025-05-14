@@ -1,13 +1,18 @@
 package com.sportsmate.controller;
 
 import com.sportsmate.dto.VenueDTO;
+import com.sportsmate.dto.VenueSportDTO;
 import com.sportsmate.pojo.PageBean;
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.Venue;
+import com.sportsmate.pojo.VenueSport;
 import com.sportsmate.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/venue")
@@ -51,5 +56,11 @@ public class VenueController {
     public Result list(Integer pageNum,Integer pageSize){
         PageBean<VenueDTO> pb =  venueService.list(pageNum,pageSize);
         return Result.success(pb);
+    }
+
+    @PostMapping("/addSports")
+    public Result addSport(@RequestBody List<VenueSportDTO> venueSports){
+        venueService.batchInsertVenueSports(venueSports);
+        return Result.success();
     }
 }
