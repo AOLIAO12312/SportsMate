@@ -26,7 +26,7 @@ public class SportController {
         return Result.success();
     }
 
-    @GetMapping("/names")
+    @GetMapping("/list")
     public Result getSportNames(){
         List<String> names = sportService.getAllSportNames();
         return Result.success(names);

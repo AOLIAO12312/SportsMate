@@ -16,5 +16,6 @@ public class VenueSport {
     @JoinColumn(name = "sport_id", referencedColumnName = "id", nullable = false)
     private Sport sport;  // 运动类型（外键，关联到sports表）
 
-    // 主键由组合键（venue_id, sport_id）来定义，JPA 会自动管理这个复合主键
+    private Integer remainSpots = 0;  // 剩余位置（默认0）
+
 }
