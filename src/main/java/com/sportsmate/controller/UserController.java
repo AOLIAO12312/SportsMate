@@ -2,6 +2,8 @@ package com.sportsmate.controller;
 
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.pojo.AddressType;
+import com.sportsmate.pojo.UserAddress;
 import com.sportsmate.service.CoachProfileService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.JwtUtil;
@@ -124,4 +126,95 @@ public class UserController {
         userService.updatePwd(newPwd);
         return Result.success();
     }
+
+    @PostMapping("/addAddress")
+    public Result addAddress(@RequestBody Map<String, String> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+
+        String country = params.get("country");
+        String state = params.get("state");
+        String city = params.get("city");
+        String district = params.get("district");
+        String street = params.get("street");
+        String postalCode = params.get("postalCode");
+        String addressTypeStr = params.get("addressType");
+
+        if (country == null || addressTypeStr == null) {
+            return Result.error("缺少必要参数");
+        }
+
+        AddressType addressType;
+        try {
+            addressType = AddressType.valueOf(addressTypeStr);
+        } catch (IllegalArgumentException e) {
+            return Result.error("无效的地址类型: " + addressTypeStr);
+        }
+
+        UserAddress userAddress = new UserAddress();
+        userAddress.setUser(userService.findByUserId(userId));
+        userAddress.setCountry(country);
+        userAddress.setState(state);
+        userAddress.setCity(city);
+        userAddress.setDistrict(district);
+        userAddress.setStreet(street);
+        userAddress.setPostalCode(postalCode);
+        userAddress.setAddressType(addressType);
+
+        userService.addAddress(userAddress);
+        return Result.success();
+    }
+
+    @DeleteMapping("/deleteAddress")
+    public Result deleteAddress(@RequestBody Map<String, String> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+        String addressTypeStr = params.get("addressType");
+
+        if (addressTypeStr == null) {
+            return Result.error("缺少必要参数");
+        }
+
+        AddressType addressType;
+        try {
+            addressType = AddressType.valueOf(addressTypeStr);
+        } catch (IllegalArgumentException e) {
+            return Result.error("无效的地址类型: " + addressTypeStr);
+        }
+
+        userService.deleteAddress(userId, addressType);
+        return Result.success();
+    }
+
+    @PutMapping("/updateAddress")
+    public Result updateAddress(@RequestBody Map<String, String> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+        String addressTypeStr = params.get("addressType");
+
+        if (addressTypeStr == null) {
+            return Result.error("缺少必要参数");
+        }
+
+        AddressType addressType;
+        try {
+            addressType = AddressType.valueOf(addressTypeStr);
+        } catch (IllegalArgumentException e) {
+            return Result.error("无效的地址类型: " + addressTypeStr);
+        }
+
+        UserAddress userAddress = new UserAddress();
+        userAddress.setCountry(params.get("country"));
+        userAddress.setState(params.get("state"));
+        userAddress.setCity(params.get("city"));
+        userAddress.setDistrict(params.get("district"));
+        userAddress.setStreet(params.get("street"));
+        userAddress.setPostalCode(params.get("postalCode"));
+        userAddress.setAddressType(addressType);
+
+        userService.updateAddress(userAddress, userId, addressType);
+        return Result.success();
+    }
+
+
 }

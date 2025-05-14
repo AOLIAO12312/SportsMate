@@ -2,10 +2,13 @@ package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.pojo.UserAddress;
+import com.sportsmate.pojo.AddressType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Delete;
 
 @Mapper
 public interface UserMapper {
@@ -24,4 +27,18 @@ public interface UserMapper {
 
     @Update("update users set password=#{md5String} where id=#{id}")
     void updatePwd(String md5String, Integer id);
+
+
+    @Insert("INSERT INTO user_addresses (user_id, country, state, city, district, street, postal_code, address_type, created_at, updated_at) " +
+                "VALUES (#{user.id}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{addressType}, NOW(), NOW())")
+    void addAddress(UserAddress userAddress);
+
+    @Select("SELECT id FROM user_addresses WHERE user_id = #{userId} AND address_type = #{addressType}")
+    Integer findAddressIdByUserIdAndType(Integer userId, AddressType addressType);
+
+    @Delete("DELETE FROM user_addresses WHERE id = #{addressId}")
+    void deleteAddress(Integer addressId);
+
+    @Update("UPDATE user_addresses SET country = #{country}, state = #{state}, city = #{city}, district = #{district}, street = #{street}, postal_code = #{postalCode}, address_type = #{addressType}, updated_at = NOW() WHERE id = #{id}")
+    void updateAddress(UserAddress userAddress);
 }

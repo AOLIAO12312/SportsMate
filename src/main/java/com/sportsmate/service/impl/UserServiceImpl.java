@@ -3,6 +3,8 @@ package com.sportsmate.service.impl;
 import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.pojo.UserAddress;
+import com.sportsmate.pojo.AddressType;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.Md5Util;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -48,6 +50,28 @@ public class UserServiceImpl implements UserService {
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer id = (Integer) claims.get("id");
         userMapper.updatePwd(Md5Util.getMD5String(newPwd),id);
+    }
+
+    @Override
+    public void addAddress(UserAddress userAddress) {
+        userMapper.addAddress(userAddress);
+    }
+
+    @Override
+    public void deleteAddress(Integer userId, AddressType addressType) {
+        Integer addressId = userMapper.findAddressIdByUserIdAndType(userId, addressType);
+        if (addressId != null) {
+            userMapper.deleteAddress(addressId);
+        }
+    }
+
+    @Override
+    public void updateAddress(UserAddress userAddress, Integer userId, AddressType addressType) {
+        Integer addressId = userMapper.findAddressIdByUserIdAndType(userId, addressType);
+        if (addressId != null) {
+            userAddress.setId(addressId);
+            userMapper.updateAddress(userAddress);
+        }
     }
 
 }

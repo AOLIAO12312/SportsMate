@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/sports_mate
     username: root
-    password: 123456
+    password: thedangerinmyheart
 
 mybatis:
   configuration:

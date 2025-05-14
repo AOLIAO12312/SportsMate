@@ -1,6 +1,8 @@
 package com.sportsmate.service;
 
 import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.UserAddress;
+import com.sportsmate.pojo.AddressType;
 import com.sportsmate.pojo.UserType;
 
 public interface UserService {
@@ -17,4 +19,11 @@ public interface UserService {
 
     //更新用户密码
     void updatePwd(String newPwd);
+
+    //添加地址
+    void addAddress(UserAddress userAddress);
+
+    void deleteAddress(Integer userId, AddressType addressType);
+
+    void updateAddress(UserAddress userAddress, Integer userId, AddressType addressType);
 }
