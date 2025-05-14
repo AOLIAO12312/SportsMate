@@ -1,5 +1,6 @@
 package com.sportsmate.pojo;
 
+import com.sportsmate.dto.VenueSportDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -9,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -60,5 +62,5 @@ public class Venue {
     private LocalDateTime updatedAt;  // 更新时间
 
     @OneToMany(mappedBy = "venue")
-    private Set<VenueSport> venueSports;  // 场馆对应的运动类型
+    private List<VenueSportDTO> venueSportDTOSet;  // 场馆对应的运动类型
 }

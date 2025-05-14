@@ -2,11 +2,11 @@ package com.sportsmate.mapper;
 
 import com.sportsmate.dto.VenueDTO;
 import com.sportsmate.pojo.Venue;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.sportsmate.pojo.VenueSport;
+import org.apache.ibatis.annotations.*;
+
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface VenueMapper {
@@ -23,4 +23,10 @@ public interface VenueMapper {
 
     @Select("SELECT name, opening_time,closing_time,full_address FROM venues")
     List<VenueDTO> listSimple();
+
+    @Insert("insert into venue_sports (venue_id,sport_id,remain_spots) values (#{venueId},#{sportId},#{remainSpots})")
+    void addVenueSport(VenueSport entity);
+
+    @Select("SELECT venue_id, sport_id, remain_spots FROM venue_sports WHERE venue_id = #{venueId}")
+    List<VenueSport> findSportsByVenueId(@Param("venueId") Integer venueId);
 }

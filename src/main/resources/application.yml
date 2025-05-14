@@ -8,3 +8,7 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true # 开启驼峰命名的下划线命名的自动转换
+
+server:
+  port: 8080
+  address: 0.0.0.0
