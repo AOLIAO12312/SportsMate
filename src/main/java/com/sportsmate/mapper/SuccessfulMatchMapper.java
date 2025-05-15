@@ -1,10 +1,7 @@
 package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.SuccessfulMatch;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -24,4 +21,14 @@ public interface SuccessfulMatchMapper {
             "WHERE user_id1 = #{loginUserId} OR user_id2 = #{loginUserId}")
     List<SuccessfulMatch> list(Integer loginUserId);
 
+    @Select("SELECT * FROM successful_matches " +
+            "WHERE (user_id1 = #{loginUserId} OR user_id2 = #{loginUserId}) " +
+            "AND status = '待完成' ")
+    List<SuccessfulMatch> findActiveMatchByUserId(Integer loginUserId);
+
+    @Select("select * from successful_matches where (match_request_id1 = #{requestId} or match_request_id2 = #{requestId}) ")
+    SuccessfulMatch findByRequestId(Integer requestId);
+
+    @Update("update successful_matches set status='已取消' where id=#{id}")
+    void cancel(Integer id);
 }

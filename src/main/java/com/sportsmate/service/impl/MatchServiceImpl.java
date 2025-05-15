@@ -88,6 +88,10 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void cancel(Integer requestId, String remark) {
         matchRequestMapper.cancel(requestId,remark);
+        SuccessfulMatch successfulMatch =  successfulMatchMapper.findByRequestId(requestId);
+        if(successfulMatch != null){
+            successfulMatchMapper.cancel(successfulMatch.getId());
+        }
     }
 
     @Override
@@ -175,6 +179,11 @@ public class MatchServiceImpl implements MatchService {
         pb.setTotal(page.getTotal());
         pb.setItems(dtos);
         return pb;
+    }
+
+    @Override
+    public List<SuccessfulMatch> findActiveMatchByUserId(Integer loginUserId) {
+        return successfulMatchMapper.findActiveMatchByUserId(loginUserId);
     }
 
     private boolean isMutuallyMatched(MatchRequest a, MatchRequest b) {
