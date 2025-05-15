@@ -29,6 +29,9 @@ public interface SuccessfulMatchMapper {
     @Select("select * from successful_matches where (match_request_id1 = #{requestId} or match_request_id2 = #{requestId}) ")
     SuccessfulMatch findByRequestId(Integer requestId);
 
+    @Select("select * from successful_matches where id=#{successfulMatchId}")
+    SuccessfulMatch findById(Integer successfulMatchId);
+
     @Update("update successful_matches set status='已取消' where id=#{id}")
     void cancel(Integer id);
 }
