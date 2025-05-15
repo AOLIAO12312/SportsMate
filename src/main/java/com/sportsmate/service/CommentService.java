@@ -20,6 +20,6 @@ public interface CommentService {
     //通过userID和matchID获取comment
     Comment findByMatchAndUserId(Integer userId, Integer matchId);
 
-    void addCommentAndCheckMatchStatus(Comment comment);
+    void CheckMatchStatus(Comment comment);
 
 }

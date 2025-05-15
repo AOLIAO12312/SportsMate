@@ -30,7 +30,6 @@ public class CommentServiceImpl implements CommentService {
         comment.setUserId(loginUserId);
         comment.setCreatedAt(LocalDateTime.now());
         commentMapper.addComment(comment);
-        addCommentAndCheckMatchStatus(comment);
     }
 
     @Override
@@ -64,13 +63,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void addCommentAndCheckMatchStatus(Comment comment) {
+    public void CheckMatchStatus(Comment comment) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
         comment.setCreatedAt(LocalDateTime.now());
-        commentMapper.addComment(comment);
-
         // 获取当前评论对应的匹配信息
         SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
         if (successfulMatch != null) {

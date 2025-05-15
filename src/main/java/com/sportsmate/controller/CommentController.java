@@ -22,7 +22,7 @@ public class CommentController {
     @PostMapping("/add")
     public Result add(@RequestBody Comment comment) {
         commentService.addComment(comment);
-        commentService.addCommentAndCheckMatchStatus(comment);
+        commentService.CheckMatchStatus(comment);
         return Result.success();
     }
 
