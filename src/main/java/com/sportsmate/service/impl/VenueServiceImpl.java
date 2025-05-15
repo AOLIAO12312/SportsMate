@@ -37,6 +37,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Venue findByName(String name) {
         Venue venue = venueMapper.findByName(name);
+        if(venue == null){
+            return null;
+        }
         List<VenueSport> vs = venueMapper.findSportsByVenueId(venue.getId());
         List<VenueSportDTO> dto = venueSportConverter.toDTO(vs);
         venue.setVenueSportDTOSet(dto);
