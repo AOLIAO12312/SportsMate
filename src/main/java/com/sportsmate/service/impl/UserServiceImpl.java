@@ -1,6 +1,8 @@
 package com.sportsmate.service.impl;
 
 import com.sportsmate.mapper.UserMapper;
+import com.sportsmate.pojo.Appeal;
+import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserAddress;
@@ -54,7 +56,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addAddress(UserAddress userAddress) {
+        Integer userId = userAddress.getUser().getId();
+        AddressType addressType = userAddress.getAddressType();
+        int count = userMapper.countAddressesByUserIdAndType(userId, addressType);
+        if (count > 0) {
+            throw new IllegalArgumentException("用户已经有该类型的地址，不能重复添加");
+        }
         userMapper.addAddress(userAddress);
+    }
+
+    @Override
+    public void addReport(Report report) {
+        userMapper.addReport(report);
+    }
+
+    @Override
+    public void addAppeal(Appeal appeal) {
+        userMapper.addAppeal(appeal);
     }
 
     @Override

@@ -23,4 +23,7 @@ public interface CommentMapper {
 
     @Select("select * from comment where id = #{id}")
     Comment getCommentById(Integer id);
+
+    @Select("select * from comment where user_id = #{userId} and match_id = #{matchId}")
+    Comment findByMatchAndUserId(Integer userId, Integer matchId);
 }

@@ -1,7 +1,10 @@
 package com.sportsmate.service.impl;
 
 import com.sportsmate.mapper.CommentMapper;
+import com.sportsmate.mapper.SuccessfulMatchMapper;
 import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.SuccessfulMatch;
+import com.sportsmate.pojo.SuccessfulMatchStatus;
 import com.sportsmate.service.CommentService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentMapper commentMapper;
 
+    @Autowired
+    SuccessfulMatchMapper successfulMatchMapper;
+
     @Override
     public void addComment(Comment comment) {
         Map<String,Object> claims = ThreadLocalUtil.get();
@@ -24,7 +30,9 @@ public class CommentServiceImpl implements CommentService {
         comment.setUserId(loginUserId);
         comment.setCreatedAt(LocalDateTime.now());
         commentMapper.addComment(comment);
+        addCommentAndCheckMatchStatus(comment);
     }
+
     @Override
     public void deleteComment(Integer id) {
         Map<String, Object> claims = ThreadLocalUtil.get();
@@ -48,5 +56,32 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment getCommentById(Integer id) {
         return commentMapper.getCommentById(id);
+    }
+
+    @Override
+    public Comment findByMatchAndUserId(Integer userId, Integer matchId) {
+        return commentMapper.findByMatchAndUserId(userId, matchId);
+    }
+
+    @Override
+    public void addCommentAndCheckMatchStatus(Comment comment) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer loginUserId = (Integer) claims.get("id");
+        comment.setUserId(loginUserId);
+        comment.setCreatedAt(LocalDateTime.now());
+        commentMapper.addComment(comment);
+
+        // 获取当前评论对应的匹配信息
+        SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
+        if (successfulMatch != null) {
+            Integer opponentUserId = successfulMatch.getUserId1().equals(loginUserId) ? successfulMatch.getUserId2() : successfulMatch.getUserId1();
+            // 检查另一个用户是否已经对该匹配进行了评论
+            Comment opponentComment = findByMatchAndUserId(opponentUserId, comment.getMatchId());
+            if (opponentComment != null) {
+                // 如果另一个用户也完成了评论，则将匹配状态修改为已完成
+                successfulMatch.setStatus(SuccessfulMatchStatus.已完成);
+                successfulMatchMapper.updateStatus(successfulMatch.getId(), successfulMatch.getStatus());
+            }
+        }
     }
 }

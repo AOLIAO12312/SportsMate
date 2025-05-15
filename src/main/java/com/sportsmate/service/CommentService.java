@@ -16,4 +16,10 @@ public interface CommentService {
 
     // 获取评论信息
     Comment getCommentById(Integer id);
+
+    //通过userID和matchID获取comment
+    Comment findByMatchAndUserId(Integer userId, Integer matchId);
+
+    void addCommentAndCheckMatchStatus(Comment comment);
+
 }

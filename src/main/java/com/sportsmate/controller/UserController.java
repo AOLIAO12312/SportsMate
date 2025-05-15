@@ -1,9 +1,12 @@
 package com.sportsmate.controller;
 
+import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.AddressType;
 import com.sportsmate.pojo.UserAddress;
+import com.sportsmate.pojo.Report;
+import com.sportsmate.pojo.Appeal;
 import com.sportsmate.service.CoachProfileService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.JwtUtil;
@@ -161,9 +164,14 @@ public class UserController {
         userAddress.setPostalCode(postalCode);
         userAddress.setAddressType(addressType);
 
-        userService.addAddress(userAddress);
-        return Result.success();
+        try {
+            userService.addAddress(userAddress);
+            return Result.success();
+        } catch (IllegalArgumentException e) {
+            return Result.error(e.getMessage());
+        }
     }
+
 
     @DeleteMapping("/deleteAddress")
     public Result deleteAddress(@RequestBody Map<String, String> params) {
@@ -216,5 +224,49 @@ public class UserController {
         return Result.success();
     }
 
+    @PostMapping("/addReport")
+    public Result addReport(@RequestBody Map<String, Object> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer reporterId = (Integer) claims.get("id");
+        String reportReason = (String) params.get("reportReason");
+        Integer reportedId = (Integer) params.get("reportedId");
+        Integer matchId = (Integer) params.get("matchId");
+        Integer commentId = (Integer) params.get("commentId");
 
+        if (reportReason == null || reportedId == null) {
+            return Result.error("缺少必要参数");
+        }
+
+        Report report = new Report();
+        report.setReporterId(reporterId);
+        report.setReportReason(reportReason);
+        report.setReportedId(reportedId);
+        report.setMatchId(matchId);
+        report.setCommentId(commentId);
+
+        if (!report.isValid()) {
+            return Result.error("matchId 和 commentId 有且只能有一个");
+        }
+
+        userService.addReport(report);
+        return Result.success();
+    }
+
+    @PostMapping("/addAppeal")
+    public Result addAppeal(@RequestBody Map<String, String> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer appellantId = (Integer) claims.get("id");
+        String reason = params.get("reason");
+
+        if (reason == null) {
+            return Result.error("缺少申诉理由");
+        }
+
+        Appeal appeal = new Appeal();
+        appeal.setAppellantId(appellantId);
+        appeal.setReason(reason);
+
+        userService.addAppeal(appeal);
+        return Result.success();
+    }
 }

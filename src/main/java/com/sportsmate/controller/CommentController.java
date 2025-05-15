@@ -21,9 +21,8 @@ public class CommentController {
 
     @PostMapping("/add")
     public Result add(@RequestBody Comment comment) {
-
-
         commentService.addComment(comment);
+        commentService.addCommentAndCheckMatchStatus(comment);
         return Result.success();
     }
 
@@ -53,5 +52,10 @@ public class CommentController {
         Comment comment = commentService.getCommentById(id);
         return Result.success(comment);
     }
+
+
+
+
+
 
 }

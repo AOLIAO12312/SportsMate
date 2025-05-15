@@ -1,5 +1,7 @@
 package com.sportsmate.mapper;
 
+import com.sportsmate.pojo.Report;
+import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserAddress;
@@ -41,4 +43,13 @@ public interface UserMapper {
 
     @Update("UPDATE user_addresses SET country = #{country}, state = #{state}, city = #{city}, district = #{district}, street = #{street}, postal_code = #{postalCode}, address_type = #{addressType}, updated_at = NOW() WHERE id = #{id}")
     void updateAddress(UserAddress userAddress);
+
+    @Insert("INSERT INTO reports (reporter_id, reported_id, reason, match_id, comment_id, status) VALUES (#{reporterId}, #{reportedId}, #{reportReason}, #{matchId}, #{commentId}, '未处理')")
+    void addReport(Report report);
+
+    @Insert("INSERT INTO appeals (appellant_id, reason, status) VALUES (#{appellantId}, #{reason}, '未处理')")
+    void addAppeal(Appeal appeal);
+
+    @Select("SELECT COUNT(*) FROM user_addresses WHERE user_id = #{userId} AND address_type = #{addressType}")
+    int countAddressesByUserIdAndType(Integer userId, AddressType addressType);
 }

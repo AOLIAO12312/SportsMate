@@ -1,5 +1,6 @@
 package com.sportsmate.service;
-
+import com.sportsmate.pojo.Appeal;
+import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserAddress;
 import com.sportsmate.pojo.AddressType;
@@ -23,7 +24,15 @@ public interface UserService {
     //添加地址
     void addAddress(UserAddress userAddress);
 
+    //删除地址
     void deleteAddress(Integer userId, AddressType addressType);
 
+    //更新地址
     void updateAddress(UserAddress userAddress, Integer userId, AddressType addressType);
+
+    //添加举报
+    void addReport(Report report);
+
+    //添加申述
+    void addAppeal(Appeal appeal);
 }

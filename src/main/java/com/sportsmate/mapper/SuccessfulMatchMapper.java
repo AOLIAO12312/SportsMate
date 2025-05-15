@@ -1,6 +1,7 @@
 package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.SuccessfulMatch;
+import com.sportsmate.pojo.SuccessfulMatchStatus;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -34,4 +35,7 @@ public interface SuccessfulMatchMapper {
 
     @Update("update successful_matches set status='已取消' where id=#{id}")
     void cancel(Integer id);
+
+    @Update("UPDATE successful_matches SET status = #{status} WHERE id = #{id}")
+    void updateStatus(Integer id, SuccessfulMatchStatus status);
 }
