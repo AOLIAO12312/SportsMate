@@ -6,7 +6,6 @@ import com.sportsmate.pojo.VenueSport;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Mapper
 public interface VenueMapper {
@@ -18,7 +17,7 @@ public interface VenueMapper {
             "VALUES (#{name}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{fullAddress}, #{openingTime}, #{closingTime}, #{notes}, #{phone}, NOW(), NOW())")
     void add(Venue venue);
 
-    @Update("update venues set name=#{name},country=#{country},state=#{state},city=#{city},district=#{district},street=#{street},postal_code=#{postalCode},full_address=#{fullAddress},opening_time=#{openingTime},closing_time=#{closingTime},notes=#{notes},phone=#{phone},updated_at=#{updatedAt}")
+    @Update("update venues set name=#{name},country=#{country},state=#{state},city=#{city},district=#{district},street=#{street},postal_code=#{postalCode},full_address=#{fullAddress},opening_time=#{openingTime},closing_time=#{closingTime},notes=#{notes},phone=#{phone},updated_at=#{updatedAt} where id=#{id}")
     void update(Venue venue);
 
     @Select("SELECT name, opening_time,closing_time,full_address FROM venues")

@@ -1,6 +1,8 @@
 package com.sportsmate.pojo;
 
 import javax.persistence.*;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,32 +13,25 @@ import java.time.LocalDateTime;
 public class SuccessfulMatch {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;  // 匹配成功ID
 
-    @ManyToOne
-    @JoinColumn(name = "match_request_id1", referencedColumnName = "id", nullable = false)
-    private MatchRequest matchRequest1;  // 匹配发起ID1（外键）
+    @NotNull
+    private Integer matchRequestId1;  // 匹配发起ID1（外键）
 
-    @ManyToOne
-    @JoinColumn(name = "match_request_id2", referencedColumnName = "id", nullable = false)
-    private MatchRequest matchRequest2;  // 匹配发起ID2（外键）
+    @NotNull
+    private Integer matchRequestId2;  // 匹配发起ID2（外键）
 
-    @ManyToOne
-    @JoinColumn(name = "user_id1", referencedColumnName = "id", nullable = false)
-    private User user1;  // 匹配用户ID1（外键）
+    @NotNull
+    private Integer userId1;  // 匹配用户ID1（外键）
 
-    @ManyToOne
-    @JoinColumn(name = "user_id2", referencedColumnName = "id", nullable = false)
-    private User user2;  // 匹配用户ID2（外键）
+    @NotNull
+    private Integer userId2;  // 匹配用户ID2（外键）
 
-    @ManyToOne
-    @JoinColumn(name = "sport_id", referencedColumnName = "id", nullable = false)
-    private Sport sport;  // 运动类型（外键）
+    @NotNull
+    private Integer sportId;  // 运动类型（外键）
 
-    @ManyToOne
-    @JoinColumn(name = "venue_id", referencedColumnName = "id", nullable = false)
-    private Venue venue;  // 场馆ID（外键）
+    @NotNull
+    private Integer venueId;  // 场馆ID（外键）
 
     @Column(nullable = false)
     private LocalDateTime startTime;  // 起始时间

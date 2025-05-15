@@ -1,16 +1,15 @@
-package com.sportsmate.pojo;
+package com.sportsmate.dto;
 
-import javax.persistence.*;
-
+import com.sportsmate.pojo.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "match_requests")
-public class MatchRequest {
+public class MatchRequestDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +18,7 @@ public class MatchRequest {
     private Integer userId;  // 发起请求的用户ID（外键，关联到用户表）
 
     @NotNull
-    private Integer sportId;  // 运动类型ID（外键，关联到运动表）
+    private String sportName;  // 运动类型ID（外键，关联到运动表）
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
