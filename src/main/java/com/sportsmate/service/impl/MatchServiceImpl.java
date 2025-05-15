@@ -2,8 +2,10 @@ package com.sportsmate.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sportsmate.controller.SuccessfulMatchConverter;
 import com.sportsmate.converter.MatchRequestConverter;
 import com.sportsmate.dto.MatchRequestDTO;
+import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.mapper.MatchRequestMapper;
 import com.sportsmate.mapper.SuccessfulMatchMapper;
 import com.sportsmate.mapper.UserMapper;
@@ -33,6 +35,9 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private SuccessfulMatchMapper successfulMatchMapper;
 
+    @Autowired
+    private SuccessfulMatchConverter successfulMatchConverter;
+
     @Override
     public void addRequest(MatchRequestDTO dto) {
         MatchRequest matchRequest = matchRequestConverter.toEntity(dto);
@@ -51,7 +56,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public PageBean<MatchRequestDTO> list(Integer pageNum, Integer pageSize) {
+    public PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize) {
         PageBean<MatchRequestDTO> pb = new PageBean<>();
 
         PageHelper.startPage(pageNum, pageSize);
@@ -145,6 +150,31 @@ public class MatchServiceImpl implements MatchService {
 
         // 没有匹配项，正常插入待匹配请求
         matchRequestMapper.addRequest(incoming);
+    }
+
+    @Override
+    public PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize) {
+        PageBean<SuccessfulMatchDTO> pb = new PageBean<>();
+
+        PageHelper.startPage(pageNum, pageSize);
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        Integer loginUserId = (Integer) claims.get("id");
+
+        // 这一步会被 PageHelper 自动分页
+        List<SuccessfulMatch> as = successfulMatchMapper.list(loginUserId);
+
+        // PageHelper 会返回 Page 类型（as 被代理）
+        Page<SuccessfulMatch> page = (Page<SuccessfulMatch>) as;
+
+        List<SuccessfulMatchDTO> dtos = new ArrayList<>();
+        for (SuccessfulMatch successfulMatch : as) {
+            SuccessfulMatchDTO dto = successfulMatchConverter.toDTO(successfulMatch);
+            dtos.add(dto);
+        }
+
+        pb.setTotal(page.getTotal());
+        pb.setItems(dtos);
+        return pb;
     }
 
     private boolean isMutuallyMatched(MatchRequest a, MatchRequest b) {

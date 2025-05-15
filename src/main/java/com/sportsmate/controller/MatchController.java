@@ -1,6 +1,7 @@
 package com.sportsmate.controller;
 
 import com.sportsmate.dto.MatchRequestDTO;
+import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.pojo.MatchRequest;
 import com.sportsmate.pojo.PageBean;
 import com.sportsmate.pojo.Result;
@@ -35,8 +36,8 @@ public class MatchController {
 
 
     @GetMapping("/listRequests")
-    private Result list(Integer pageNum,Integer pageSize){
-        PageBean<MatchRequestDTO> pb = matchService.list(pageNum,pageSize);
+    private Result listRequests(Integer pageNum,Integer pageSize){
+        PageBean<MatchRequestDTO> pb = matchService.listRequests(pageNum,pageSize);
         return Result.success(pb);
     }
 
@@ -52,5 +53,10 @@ public class MatchController {
         return Result.success();
     }
 
+    @GetMapping("/listSuccessfulMatches")
+    private Result listSuccessfulMatches(Integer pageNum,Integer pageSize){
+        PageBean<SuccessfulMatchDTO> pb = matchService.listSuccessfulMatches(pageNum,pageSize);
+        return Result.success(pb);
+    }
 
 }

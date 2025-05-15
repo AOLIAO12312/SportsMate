@@ -1,6 +1,7 @@
 package com.sportsmate.service;
 
 import com.sportsmate.dto.MatchRequestDTO;
+import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.pojo.MatchRequest;
 import com.sportsmate.pojo.PageBean;
 
@@ -9,11 +10,13 @@ public interface MatchService {
 
     MatchRequest findActiveRequestByUserId(Integer loginUserId);
 
-    PageBean<MatchRequestDTO> list(Integer pageNum, Integer pageSize);
+    PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize);
 
     MatchRequest findById(Integer requestId);
 
     void cancel(Integer requestId, String remark);
 
     void addRequestWithAutoMatch(MatchRequestDTO dto, Integer loginUserId);
+
+    PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize);
 }

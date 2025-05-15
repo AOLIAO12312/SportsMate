@@ -4,6 +4,9 @@ import com.sportsmate.pojo.SuccessfulMatch;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface SuccessfulMatchMapper {
@@ -16,5 +19,9 @@ public interface SuccessfulMatchMapper {
             ")")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     public void addSuccessfulMatch(SuccessfulMatch successfulMatch);
+
+    @Select("SELECT * FROM successful_matches " +
+            "WHERE user_id1 = #{loginUserId} OR user_id2 = #{loginUserId}")
+    List<SuccessfulMatch> list(Integer loginUserId);
 
 }
