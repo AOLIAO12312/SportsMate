@@ -50,6 +50,9 @@ public class CommentController {
             return Result.error("id不能为空");
         }
         Comment comment = commentService.getCommentById(id);
+        if(comment == null){
+            return Result.error("未找到该评论");
+        }
         return Result.success(comment);
     }
 
