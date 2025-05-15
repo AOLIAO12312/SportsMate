@@ -35,7 +35,7 @@ public class VenueController {
         return Result.success();
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     public Result update(@RequestBody @Validated Venue venue){
         if(venue == null){
             return Result.error("传入值为空");
