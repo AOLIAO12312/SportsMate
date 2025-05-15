@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface CoachProfileMapper {
 
@@ -17,4 +19,7 @@ public interface CoachProfileMapper {
 
     @Insert("insert into coach_profiles(user_id) values(#{registerUserId})")
     void add(Integer registerUserId);
+
+    @Select("select * from coach_profiles where sport_id=#{sportId}")
+    List<CoachProfile> list(Integer sportId);
 }

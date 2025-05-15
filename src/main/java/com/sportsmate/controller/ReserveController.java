@@ -1,9 +1,14 @@
 package com.sportsmate.controller;
 
+import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.dto.VenueDTO;
+import com.sportsmate.mapper.CoachProfileMapper;
 import com.sportsmate.pojo.PageBean;
 import com.sportsmate.pojo.Result;
+import com.sportsmate.service.CoachProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,12 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reserve")
 public class ReserveController {
 
-    //显示教练列表，按照运动、星级进行筛选
-//    @GetMapping("/listCoach")
-//    public Result listCoach(Integer pageNum,Integer pageSize){
-//        PageBean<VenueDTO> pb =  venueService.list(pageNum,pageSize);
-//        return Result.success(pb);
-//    }
+    @Autowired
+    private CoachProfileService coachProfileService;
+
+    //显示教练列表，按照运动
+    @GetMapping("/listCoach")
+    public Result listCoach(@RequestBody Integer pageNum,@RequestBody Integer pageSize,String sportName){
+        PageBean<CoachProfileDTO> pb =  coachProfileService.listCoach(pageNum,pageSize,sportName);
+        if(pb == null){
+            return Result.error("不存在该运动");
+        }
+        return Result.success(pb);
+    }
 
     //显示教练空闲时间，列表形式返回
 
