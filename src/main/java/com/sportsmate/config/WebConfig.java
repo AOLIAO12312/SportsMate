@@ -20,8 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         //登录和注册接口不拦截
         registry.addInterceptor(loginInterceptor).excludePathPatterns("/user/login","/user/register");
-        // 教练权限拦截器：仅拦截 /coach/** 路径
-        registry.addInterceptor(coachInterceptor)
-                .addPathPatterns("/coach/**");
+//        // 教练权限拦截器：仅拦截 /coach/** 路径
+//        registry.addInterceptor(coachInterceptor)
+//                .addPathPatterns("/coach/**");
     }
 }

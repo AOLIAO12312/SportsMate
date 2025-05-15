@@ -41,7 +41,7 @@ public class SportController {
         return Result.success(description);
     }
 
-    @PutMapping("update")
+    @PostMapping("update")
     public Result update(@RequestBody Sport sport){
         sportService.update(sport);
         return Result.success();

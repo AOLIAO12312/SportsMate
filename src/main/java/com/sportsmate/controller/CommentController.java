@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     // 修改评论
-    @PutMapping("/updateComment")
+    @PostMapping("/updateComment")
     public Result update(@RequestBody Comment comment) {
         commentService.updateComment(comment);
         return Result.success();

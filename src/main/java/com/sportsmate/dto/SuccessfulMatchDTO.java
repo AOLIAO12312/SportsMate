@@ -26,6 +26,8 @@ public class SuccessfulMatchDTO {
 
     private String opponentPhone;
 
+    private String opponentRemark;
+
     @NotNull
     private String sportName;  // 运动类型
 

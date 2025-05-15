@@ -2,7 +2,7 @@ package com.sportsmate.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.sportsmate.controller.SuccessfulMatchConverter;
+import com.sportsmate.converter.SuccessfulMatchConverter;
 import com.sportsmate.converter.MatchRequestConverter;
 import com.sportsmate.dto.MatchRequestDTO;
 import com.sportsmate.dto.SuccessfulMatchDTO;
@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -91,6 +92,11 @@ public class MatchServiceImpl implements MatchService {
         SuccessfulMatch successfulMatch =  successfulMatchMapper.findByRequestId(requestId);
         if(successfulMatch != null){
             successfulMatchMapper.cancel(successfulMatch.getId());
+            if(Objects.equals(requestId,successfulMatch.getMatchRequestId1())){
+                matchRequestMapper.cancel(successfulMatch.getMatchRequestId2(),"对方原因:"+remark);
+            }else {
+                matchRequestMapper.cancel(successfulMatch.getMatchRequestId1(),"对方原因:"+remark);
+            }
         }
     }
 

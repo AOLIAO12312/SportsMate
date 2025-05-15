@@ -2,10 +2,7 @@ package com.sportsmate.controller;
 
 import com.sportsmate.dto.MatchRequestDTO;
 import com.sportsmate.dto.SuccessfulMatchDTO;
-import com.sportsmate.pojo.MatchRequest;
-import com.sportsmate.pojo.PageBean;
-import com.sportsmate.pojo.Result;
-import com.sportsmate.pojo.SuccessfulMatch;
+import com.sportsmate.pojo.*;
 import com.sportsmate.service.CommentService;
 import com.sportsmate.service.MatchService;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -37,11 +34,11 @@ public class MatchController {
         }
         List<SuccessfulMatch> existingMatches = matchService.findActiveMatchByUserId(loginUserId);
 
-//        for(SuccessfulMatch existingMatch : existingMatches){
-//            if(commentService.findByMatchAndUserId(existingMatch.getId(),loginUserId) == null){
-//                return Result.error("当前存在未完成(未评价)的比赛");
-//            }
-//        }
+        for(SuccessfulMatch existingMatch : existingMatches){
+            if(commentService.findByMatchAndUserId(existingMatch.getId(),loginUserId) == null){
+                return Result.error("当前存在未完成(未评价)的比赛");
+            }
+        }
 
         matchService.addRequestWithAutoMatch(dto, loginUserId);
         return Result.success();
@@ -54,13 +51,16 @@ public class MatchController {
         return Result.success(pb);
     }
 
-    @PutMapping("/cancel")
+    @PostMapping("/cancel")
     private Result cancel(Integer requestId,String remark){
         MatchRequest matchRequest = matchService.findById(requestId);
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         if(matchRequest == null || !Objects.equals(matchRequest.getUserId(), loginUserId)){
             return Result.error("不存在此请求记录");
+        }
+        if(matchRequest.getStatus() == MatchRequestStatus.已取消){
+            return Result.error("该请求已被取消");
         }
         matchService.cancel(requestId,remark);
         return Result.success();

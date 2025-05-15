@@ -99,7 +99,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     public Result update(@RequestBody @Validated User user){
         Map<String,Object> claims = ThreadLocalUtil.get();
         if(user.getId() == claims.get("id")){
@@ -194,7 +194,7 @@ public class UserController {
         return Result.success();
     }
 
-    @PutMapping("/updateAddress")
+    @PostMapping("/updateAddress")
     public Result updateAddress(@RequestBody Map<String, String> params) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer userId = (Integer) claims.get("id");

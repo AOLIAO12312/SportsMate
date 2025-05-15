@@ -23,7 +23,7 @@ public class CoachController {
     @Autowired
     private CoachProfileConverter coachProfileConverter;
 
-    @PutMapping("/updateProfile")
+    @PostMapping("/updateProfile")
     public Result updateCoachProfile(@RequestBody CoachProfileDTO dto) {
         CoachProfile coachProfile;
         try{
