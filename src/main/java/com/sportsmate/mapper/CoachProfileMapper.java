@@ -20,6 +20,6 @@ public interface CoachProfileMapper {
     @Insert("insert into coach_profiles(user_id) values(#{registerUserId})")
     void add(Integer registerUserId);
 
-    @Select("select * from coach_profiles where sport_id=#{sportId}")
+    @Select("select * from coach_profiles where coached_sports=#{sportId}")
     List<CoachProfile> list(Integer sportId);
 }

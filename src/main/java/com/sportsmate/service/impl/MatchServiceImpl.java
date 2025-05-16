@@ -15,6 +15,7 @@ import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageInfo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,26 +61,33 @@ public class MatchServiceImpl implements MatchService {
     public PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize) {
         PageBean<MatchRequestDTO> pb = new PageBean<>();
 
+        // 启动分页
         PageHelper.startPage(pageNum, pageSize);
-        Map<String,Object> claims = ThreadLocalUtil.get();
+
+        // 获取当前登录用户 ID（从 ThreadLocal 中）
+        Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
 
-        // 这一步会被 PageHelper 自动分页
+        // 执行分页查询（PageHelper 会自动拦截并处理）
         List<MatchRequest> as = matchRequestMapper.list(loginUserId);
 
-        // PageHelper 会返回 Page 类型（as 被代理）
-        Page<MatchRequest> page = (Page<MatchRequest>) as;
+        // 使用 PageInfo 安全获取分页信息
+        PageInfo<MatchRequest> pageInfo = new PageInfo<>(as);
 
+        // 转换成 DTO 列表
         List<MatchRequestDTO> dtos = new ArrayList<>();
         for (MatchRequest matchRequest : as) {
             MatchRequestDTO dto = matchRequestConverter.toDTO(matchRequest);
             dtos.add(dto);
         }
 
-        pb.setTotal(page.getTotal());
+        // 封装返回结果
+        pb.setTotal(pageInfo.getTotal());
         pb.setItems(dtos);
+
         return pb;
     }
+
 
     @Override
     public MatchRequest findById(Integer requestId) {
