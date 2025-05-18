@@ -51,7 +51,6 @@ public class AdminServiceImpl implements AdminService {
             Report report = adminMapper.getReportById(reportId);
             if (report != null) {
                 report.setStatus(HandleStatus.已处理);
-                // 修改为传入正确的参数
                 adminMapper.updateReportStatus(reportId, report.getStatus());
             }
         } catch (Exception e) {
@@ -59,6 +58,7 @@ public class AdminServiceImpl implements AdminService {
             throw e;
         }
     }
+
 
     @Override
     public void handleAppeal(Integer appealId) {
@@ -99,6 +99,26 @@ public class AdminServiceImpl implements AdminService {
             }
         } catch (Exception e) {
             logger.error("解封用户失败，userId: {}", userId, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Report getReportById(Integer reportId) {
+        try {
+            return adminMapper.getReportById(reportId);
+        } catch (Exception e) {
+            logger.error("获取单个举报失败，reportId: {}", reportId, e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Appeal getAppealById(Integer appealId) {
+        try {
+            return adminMapper.getAppealById(appealId);
+        } catch (Exception e) {
+            logger.error("获取单个申诉失败，appealId: {}", appealId, e);
             throw e;
         }
     }

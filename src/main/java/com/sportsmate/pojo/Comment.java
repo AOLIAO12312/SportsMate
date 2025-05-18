@@ -28,7 +28,5 @@ public class Comment {
     @Max(10)
     private Integer venueRating;  // 场馆评分（0-10）
 
-    private String coachComment;  // 对教练的文字评价
-
     private LocalDateTime createdAt;  // 创建时间
 }

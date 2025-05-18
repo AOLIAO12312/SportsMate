@@ -10,15 +10,15 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CommentMapper {
 
-    @Insert("insert into comment(user_id,match_id,opponent_or_coach_rating,venue_rating,coach_comment,created_at)"+
-    "values(#{userId},#{matchId},#{opponentOrCoachRating},#{venueRating},#{coachComment},#{createdAt})")
+    @Insert("insert into comment(user_id,match_id,opponent_or_coach_rating,venue_rating,created_at)"+
+    "values(#{userId},#{matchId},#{opponentOrCoachRating},#{venueRating},#{createdAt})")
     void addComment(Comment comment);
 
     @Delete("delete from comment where id = #{id}")
     void deleteComment(Integer id);
 
     @Update("update comment set user_id = #{userId}, match_id = #{matchId}, opponent_or_coach_rating = #{opponentOrCoachRating}, " +
-            "venue_rating = #{venueRating}, coach_comment = #{coachComment}, created_at = #{createdAt} where id = #{id}")
+            "venue_rating = #{venueRating}, created_at = #{createdAt} where id = #{id}")
     void updateComment(Comment comment);
 
     @Select("select * from comment where id = #{id}")

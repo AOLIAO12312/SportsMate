@@ -16,7 +16,7 @@ public interface AdminMapper {
     @Select("SELECT * FROM reports WHERE id = #{id}")
     Report getReportById(Integer id);
 
-    @Update("UPDATE reports SET status = #{status}, updated_at = NOW() WHERE id = #{id}")
+    @Update("UPDATE reports SET status = #{status} WHERE id = #{id}")
     void updateReportStatus(@Param("id") Integer id, @Param("status") HandleStatus status);
 
     // Appeal相关方法
@@ -26,7 +26,7 @@ public interface AdminMapper {
     @Select("SELECT * FROM appeals WHERE id = #{id}")
     Appeal getAppealById(Integer id);
 
-    @Update("UPDATE appeals SET status = #{status}, updated_at = NOW() WHERE id = #{id}")
+    @Update("UPDATE appeals SET status = #{status} WHERE id = #{id}")
     void updateAppealStatus(@Param("id") Integer id, @Param("status") HandleStatus status);
 
     // 封禁/解封用户（根据需求可能需要UserMapper处理）

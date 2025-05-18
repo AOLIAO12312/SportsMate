@@ -22,4 +22,10 @@ public interface AdminService {
 
     // 解封用户
     void unbanUser(Integer userId);
+
+    // 查看单个举报
+    Report getReportById(Integer reportId);
+
+    // 查看单个申诉
+    Appeal getAppealById(Integer appealId);
 }

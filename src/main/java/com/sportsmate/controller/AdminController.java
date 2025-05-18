@@ -4,7 +4,9 @@ import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.pojo.User;
 import com.sportsmate.service.AdminService;
+import com.sportsmate.service.UserService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,22 +25,37 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // 验证是否为管理员
+    @Autowired
+    private UserService userService;
+
+    // 验证是否为管理员(token无用户类型，应该是先在token中获取id，然后通过id获取用户类型)
     private boolean isAdmin() {
+        Logger logger = LoggerFactory.getLogger(AdminController.class);
         Map<String, Object> claims = ThreadLocalUtil.get();
-        if (claims == null || claims.get("userType") == null) {
+        if (claims == null) {
+            logger.error("ThreadLocalUtil.get() 返回 null，无法获取用户信息");
             return false;
         }
-        try {
-            UserType type = UserType.valueOf((String) claims.get("userType"));
-            return type == UserType.管理员;
-        } catch (IllegalArgumentException e) {
-            logger.error("用户类型解析失败", e);
+        Object idObj = claims.get("id");
+        if (idObj == null) {
+            logger.error("claims 中没有包含 id 信息");
             return false;
         }
+        Integer userId = (Integer) idObj;
+        // 通过用户 ID 获取用户信息
+        User user = userService.findByUserId(userId);
+        if (user == null) {
+            logger.error("根据 userId: {} 未找到用户信息", userId);
+            return false;
+        }
+        if (user.getUserType() == null) {
+            logger.error("用户 userId: {} 的 userType 为 null", userId);
+            return false;
+        }
+        return user.getUserType() == UserType.管理员;
     }
 
-    // 查看举报
+    // 查看举报列表
     @GetMapping("/getReports")
     public Result getReports() {
         try {
@@ -53,7 +70,7 @@ public class AdminController {
         }
     }
 
-    // 查看申诉
+    // 查看申诉列表
     @GetMapping("/getAppeals")
     public Result getAppeals() {
         try {
@@ -75,6 +92,10 @@ public class AdminController {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
+            Report report = adminService.getReportById(reportId);
+            if (report == null) {
+                return Result.error("未找到该举报信息，无法处理");
+            }
             adminService.handleReport(reportId);
             return Result.success();
         } catch (Exception e) {
@@ -82,7 +103,6 @@ public class AdminController {
             return Result.error("处理举报失败");
         }
     }
-
     // 管理员处理申诉
     @PostMapping("/handleAppeal")
     public Result handleAppeal(@RequestParam Integer appealId) {
@@ -125,6 +145,42 @@ public class AdminController {
         } catch (Exception e) {
             logger.error("解封用户失败，userId: {}", userId, e);
             return Result.error("解封用户失败");
+        }
+    }
+
+    // 查看单个举报
+    @GetMapping("/getReportById")
+    public Result getReportById(@RequestParam Integer reportId) {
+        try {
+            if (!isAdmin()) {
+                return Result.error("没有管理员权限");
+            }
+            Report report = adminService.getReportById(reportId);
+            if (report == null) {
+                return Result.error("未找到该举报信息");
+            }
+            return Result.success(report);
+        } catch (Exception e) {
+            logger.error("获取单个举报失败，reportId: {}", reportId, e);
+            return Result.error("获取单个举报失败");
+        }
+    }
+
+    // 查看单个申诉
+    @GetMapping("/getAppealById")
+    public Result getAppealById(@RequestParam Integer appealId) {
+        try {
+            if (!isAdmin()) {
+                return Result.error("没有管理员权限");
+            }
+            Appeal appeal = adminService.getAppealById(appealId);
+            if (appeal == null) {
+                return Result.error("未找到该申诉信息");
+            }
+            return Result.success(appeal);
+        } catch (Exception e) {
+            logger.error("获取单个申诉失败，appealId: {}", appealId, e);
+            return Result.error("获取单个申诉失败");
         }
     }
 }
