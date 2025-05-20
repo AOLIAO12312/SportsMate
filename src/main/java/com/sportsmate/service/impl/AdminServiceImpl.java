@@ -245,4 +245,17 @@ public class AdminServiceImpl implements AdminService {
             throw e;
         }
     }
+    @Override
+    @Transactional
+    public void warnUser(Integer userId) {
+        try {
+            // 直接调用 UserMapper 中的 updateUserStatus 方法将用户状态设为警告
+            userMapper.updateUserStatus(userId, UserStatus.警告);
+            logger.info("用户 userId: {} 已被警告", userId);
+        } catch (Exception e) {
+            logger.error("警告用户失败，userId: {}", userId, e);
+            throw new RuntimeException("警告用户失败", e);
+        }
+    }
 }
+

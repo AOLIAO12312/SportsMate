@@ -22,7 +22,7 @@ public interface ReportMapper {
     @Update("UPDATE reports SET status = #{status} WHERE id = #{id}")
     void updateReportStatus(@Param("id") Integer id, @Param("status") HandleStatus status);
 
-    @Select("SELECT * FROM reports WHERE reporter_id IN (SELECT id FROM users WHERE username = #{username})")
+    @Select("SELECT * FROM reports WHERE reporter_id IN (SELECT id FROM users WHERE id = #{userId})")
     List<Report> getReportsByUserId(Integer userId);
 
     @Select("SELECT * FROM reports WHERE reporter_id IN (SELECT id FROM users WHERE user_type = #{userType})")

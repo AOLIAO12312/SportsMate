@@ -58,4 +58,6 @@ public interface AdminService {
     List<Comment> getCommentsByUserType(UserType userType);
     // 根据账号状态查询评论
     List<Comment> getCommentsByUserStatus(UserStatus userStatus);
+    //警告用户
+    void warnUser(Integer userId);
 }
