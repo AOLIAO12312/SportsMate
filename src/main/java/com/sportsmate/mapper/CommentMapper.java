@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface CommentMapper {
 
@@ -26,4 +28,15 @@ public interface CommentMapper {
 
     @Select("select * from comment where user_id = #{userId} and match_id = #{matchId}")
     Comment findByMatchAndUserId(Integer userId, Integer matchId);
+
+    @Select("SELECT * FROM comment WHERE user_id = #{userId}")
+    List<Comment> getCommentsByUserId(Integer userId);
+
+    @Select("<script>" +
+            "SELECT * FROM comment WHERE user_id IN " +
+            "<foreach item='item' index='index' collection='userIds' open='(' separator=',' close=')'>" +
+            "#{item}" +
+            "</foreach>" +
+            "</script>")
+    List<Comment> getCommentsByUserIds(List<Integer> userIds);
 }

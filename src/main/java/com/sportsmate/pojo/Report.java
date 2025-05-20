@@ -4,6 +4,9 @@ package com.sportsmate.pojo;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 @Data
 public class Report {
 
@@ -17,7 +20,7 @@ public class Report {
     private Integer reportedId;
 
     @NotNull
-    private String reportReason;
+    private String reason;
 
     private Integer commentId;
 
@@ -28,5 +31,6 @@ public class Report {
     }//判断必须有两个中的一个
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private HandleStatus status = HandleStatus.未处理;
 }

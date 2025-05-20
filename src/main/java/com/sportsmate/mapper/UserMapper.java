@@ -4,6 +4,7 @@ import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
+import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.UserAddress;
 import com.sportsmate.pojo.AddressType;
 import org.apache.ibatis.annotations.Insert;
@@ -11,6 +12,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.Delete;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -52,4 +55,20 @@ public interface UserMapper {
 
     @Select("SELECT COUNT(*) FROM user_addresses WHERE user_id = #{userId} AND address_type = #{addressType}")
     int countAddressesByUserIdAndType(Integer userId, AddressType addressType);
+
+    // 封禁/解封用户（根据需求可能需要UserMapper处理）
+    @Update("UPDATE users SET status = '封禁' WHERE id = #{userId}")
+    void banUser(Integer userId);
+
+    @Update("UPDATE users SET status = '正常' WHERE id = #{userId}")
+    void unbanUser(Integer userId);
+
+    @Select("SELECT * FROM users WHERE username = #{username}")
+    List<User> getUsersByUsername(String username);
+
+    @Select("SELECT * FROM users WHERE user_type = #{userType}")
+    List<User> getUsersByUserType(UserType userType);
+
+    @Select("SELECT * FROM users WHERE status = #{userStatus}")
+    List<User> getUsersByUserStatus(UserStatus userStatus);
 }

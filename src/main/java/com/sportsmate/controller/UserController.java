@@ -228,18 +228,18 @@ public class UserController {
     public Result addReport(@RequestBody Map<String, Object> params) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer reporterId = (Integer) claims.get("id");
-        String reportReason = (String) params.get("reportReason");
+        String reason = (String) params.get("reason");
         Integer reportedId = (Integer) params.get("reportedId");
         Integer matchId = (Integer) params.get("matchId");
         Integer commentId = (Integer) params.get("commentId");
 
-        if (reportReason == null || reportedId == null) {
+        if (reason == null || reportedId == null) {
             return Result.error("缺少必要参数");
         }
 
         Report report = new Report();
         report.setReporterId(reporterId);
-        report.setReportReason(reportReason);
+        report.setReason(reason);
         report.setReportedId(reportedId);
         report.setMatchId(matchId);
         report.setCommentId(commentId);
