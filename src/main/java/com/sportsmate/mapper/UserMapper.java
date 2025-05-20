@@ -71,4 +71,7 @@ public interface UserMapper {
 
     @Select("SELECT * FROM users WHERE status = #{userStatus}")
     List<User> getUsersByUserStatus(UserStatus userStatus);
+
+    @Update("UPDATE users SET status = #{userStatus} WHERE id = #{userId}")
+    void updateUserStatus(Integer userId, UserStatus userStatus);
 }

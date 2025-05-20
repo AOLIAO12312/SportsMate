@@ -384,4 +384,22 @@ public class AdminController {
             return Result.error("根据账号状态查询评论失败");
         }
     }
+
+    @PostMapping("/warnUser")
+    public Result warnUser(@RequestBody Map<String, Integer> params) {
+        try {
+            if (!isAdmin()) {
+                return Result.error("没有管理员权限");
+            }
+            Integer userId = params.get("userId");
+            if (userId == null) {
+                return Result.error("未提供有效的用户ID");
+            }
+            adminService.warnUser(userId);
+            return Result.success();
+        } catch (Exception e) {
+            logger.error("警告用户失败", e);
+            return Result.error("警告用户失败");
+        }
+    }
 }
