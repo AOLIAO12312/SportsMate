@@ -1,26 +1,22 @@
 package com.sportsmate.controller;
 
-import com.sportsmate.pojo.CoachProfile;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.Result;
-import com.sportsmate.pojo.User;
-import com.sportsmate.service.CommentService;
-import com.sportsmate.utils.ThreadLocalUtil;
+import com.sportsmate.service.MatchCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/comment")
-public class CommentController {
+public class MatchCommentController {
 
     @Autowired
-    private CommentService commentService;
+    private MatchCommentService commentService;
 
     @PostMapping("/add")
-    public Result add(@RequestBody Comment comment) {
+    public Result add(@RequestBody MatchComment comment) {
         commentService.addComment(comment);
         commentService.CheckMatchStatus(comment);
         return Result.success();
@@ -38,7 +34,7 @@ public class CommentController {
 
     // 修改评论
     @PostMapping("/updateComment")
-    public Result update(@RequestBody Comment comment) {
+    public Result update(@RequestBody MatchComment comment) {
         commentService.updateComment(comment);
         return Result.success();
     }
@@ -49,7 +45,7 @@ public class CommentController {
         if (id == null) {
             return Result.error("id不能为空");
         }
-        Comment comment = commentService.getCommentById(id);
+        MatchComment comment = commentService.getCommentById(id);
         if(comment == null){
             return Result.error("未找到该评论");
         }

@@ -1,17 +1,18 @@
 package com.sportsmate.service.impl;
 
-import com.sportsmate.mapper.CommentMapper;
+import com.sportsmate.mapper.MatchCommentMapper;
 import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.mapper.ReportMapper;
 import com.sportsmate.mapper.AppealMapper;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.mapper.ReservationCommentMapper;
+import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.HandleStatus;
 import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserStatus;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.service.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,10 @@ public class AdminServiceImpl implements AdminService {
     private AppealMapper appealMapper;
 
     @Autowired
-    private CommentMapper commentMapper;
+    private MatchCommentMapper commentMapper;
+
+    @Autowired
+    private ReservationCommentMapper reservationCommentMapper;
 
     @Override
     public List<Report> getReports() {
@@ -137,111 +141,42 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Report> getReportsByUsername(String username) {
-        User user = userMapper.findByUserName(username);
-        if (user != null) {
-            return reportMapper.getReportsByUserId(user.getId());
-        }
-        return null;
-    }
-
-    @Override
-    public List<Report> getReportsByUserType(UserType userType) {
-        return reportMapper.getReportsByUserType(userType);
-    }
-
-    @Override
-    public List<Report> getReportsByUserStatus(UserStatus userStatus) {
-        return reportMapper.getReportsByUserStatus(userStatus);
-    }
-
-    @Override
-    public List<Appeal> getAppealsByUsername(String username) {
-        User user = userMapper.findByUserName(username);
-        if (user != null) {
-            return appealMapper.getAppealsByUserId(user.getId());
-        }
-        return null;
-    }
-
-    @Override
-    public List<Appeal> getAppealsByUserType(UserType userType) {
-        return appealMapper.getAppealsByUserType(userType);
-    }
-
-    @Override
-    public List<Appeal> getAppealsByUserStatus(UserStatus userStatus) {
-        return appealMapper.getAppealsByUserStatus(userStatus);
-    }
-
-    @Override
-    public List<User> getUsersByUsername(String username) {
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getFilteredItems(String type, String username, UserType userType, UserStatus userStatus) {
+        logger.info("开始执行 getFilteredItems 方法，筛选类型: {}, 用户名: {}, 用户类型: {}, 用户状态: {}", type, username, userType, userStatus);
         try {
-            return userMapper.getUsersByUsername(username);
-        } catch (Exception e) {
-            logger.error("根据用户名查询用户失败", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<User> getUsersByUserType(UserType userType) {
-        try {
-            return userMapper.getUsersByUserType(userType);
-        } catch (Exception e) {
-            logger.error("根据用户类型查询用户失败", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<User> getUsersByUserStatus(UserStatus userStatus) {
-        try {
-            return userMapper.getUsersByUserStatus(userStatus);
-        } catch (Exception e) {
-            logger.error("根据账号状态查询用户失败", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<Comment> getCommentsByUsername(String username) {
-        try {
-            User user = userMapper.findByUserName(username);
-            if (user != null) {
-                return commentMapper.getCommentsByUserId(user.getId());
+            switch (type) {
+                case "reports":
+                    logger.info("筛选类型为 reports，开始查询举报列表");
+                    List<Report> reports = reportMapper.getReportsByFilters(username, userType, userStatus);
+                    logger.info("成功查询到 {} 条举报记录", reports.size());
+                    return (List<T>) reports;
+                case "appeals":
+                    logger.info("筛选类型为 appeals，开始查询申诉列表");
+                    List<Appeal> appeals = appealMapper.getAppealsByFilters(username, userType, userStatus);
+                    logger.info("成功查询到 {} 条申诉记录", appeals.size());
+                    return (List<T>) appeals;
+                case "users":
+                    logger.info("筛选类型为 users，开始查询用户列表");
+                    List<User> users = userMapper.getUsersByFilters(username, userType, userStatus);
+                    logger.info("成功查询到 {} 条用户记录", users.size());
+                    return (List<T>) users;
+                case "matchComments":
+                    logger.info("筛选类型为 matchComments，开始查询比赛评论列表");
+                    List<MatchComment> matchComments = commentMapper.getCommentsByFilters(username, userType, userStatus);
+                    logger.info("成功查询到 {} 条比赛评论记录", matchComments.size());
+                    return (List<T>) matchComments;
+                case "reservationComments":
+                    logger.info("筛选类型为 reservationComments，开始查询预约评论列表");
+                    List<ReservationComment> reservationComments = reservationCommentMapper.getCommentsByFilters(username, userType, userStatus);
+                    logger.info("成功查询到 {} 条预约评论记录", reservationComments.size());
+                    return (List<T>) reservationComments;
+                default:
+                    logger.error("无效的筛选类型: {}", type);
+                    throw new IllegalArgumentException("无效的筛选类型: " + type);
             }
-            return null;
         } catch (Exception e) {
-            logger.error("根据用户名查询评论失败", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<Comment> getCommentsByUserType(UserType userType) {
-        try {
-            List<User> users = userMapper.getUsersByUserType(userType);
-            if (users != null && !users.isEmpty()) {
-                return commentMapper.getCommentsByUserIds(users.stream().map(User::getId).toList());
-            }
-            return null;
-        } catch (Exception e) {
-            logger.error("根据用户类型查询评论失败", e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<Comment> getCommentsByUserStatus(UserStatus userStatus) {
-        try {
-            List<User> users = userMapper.getUsersByUserStatus(userStatus);
-            if (users != null && !users.isEmpty()) {
-                return commentMapper.getCommentsByUserIds(users.stream().map(User::getId).toList());
-            }
-            return null;
-        } catch (Exception e) {
-            logger.error("根据账号状态查询评论失败", e);
+            logger.error("筛选过程中出现异常，筛选类型: {}, 用户名: {}, 用户类型: {}, 用户状态: {}", type, username, userType, userStatus, e);
             throw e;
         }
     }

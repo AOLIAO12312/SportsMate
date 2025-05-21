@@ -63,14 +63,15 @@ public interface UserMapper {
     @Update("UPDATE users SET status = '正常' WHERE id = #{userId}")
     void unbanUser(Integer userId);
 
-    @Select("SELECT * FROM users WHERE username = #{username}")
-    List<User> getUsersByUsername(String username);
-
-    @Select("SELECT * FROM users WHERE user_type = #{userType}")
-    List<User> getUsersByUserType(UserType userType);
-
-    @Select("SELECT * FROM users WHERE status = #{userStatus}")
-    List<User> getUsersByUserStatus(UserStatus userStatus);
+    @Select("<script>" +
+            "SELECT * FROM users " +
+            "<where> " +
+            "    <if test='username != null'>username = #{username}</if> " +
+            "    <if test='userType != null'>AND user_type = #{userType}</if> " +
+            "    <if test='userStatus != null'>AND status = #{userStatus}</if> " +
+            "</where>" +
+            "</script>")
+    List<User> getUsersByFilters(String username, UserType userType, UserStatus userStatus);
 
     @Update("UPDATE users SET status = #{userStatus} WHERE id = #{userId}")
     void updateUserStatus(Integer userId, UserStatus userStatus);

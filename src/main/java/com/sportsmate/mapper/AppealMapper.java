@@ -23,14 +23,21 @@ public interface AppealMapper {
     @Update("UPDATE appeals SET status = #{status} WHERE id = #{id}")
     void updateAppealStatus(@Param("id") Integer id, @Param("status") HandleStatus status);
 
-    @Select("SELECT * FROM appeals WHERE appellant_id IN (SELECT id FROM users WHERE id = #{userId})")
-    List<Appeal> getAppealsByUserId(Integer userId);
 
-    @Select("SELECT * FROM appeals WHERE appellant_id IN (SELECT id FROM users WHERE user_type = #{userType})")
-    List<Appeal> getAppealsByUserType(UserType userType);
-
-    @Select("SELECT * FROM appeals WHERE appellant_id IN (SELECT id FROM users WHERE status = #{userStatus})")
-    List<Appeal> getAppealsByUserStatus(UserStatus userStatus);
+    @Select("<script>" +
+            "SELECT * FROM appeals " +
+            "<where>" +
+            "  id IN (" +
+            "    SELECT id FROM users " +
+            "    <where>" +
+            "      <if test='username != null'>username = #{username}</if> " +
+            "      <if test='userType != null'>AND user_type = #{userType}</if> " +
+            "      <if test='userStatus != null'>AND status = #{userStatus}</if> " +
+            "    </where>" +
+            "  )" +
+            "</where>" +
+            "</script>")
+    List<Appeal> getAppealsByFilters(String username, UserType userType, UserStatus userStatus);
 
 
 }

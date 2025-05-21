@@ -6,7 +6,7 @@ import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.User;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.service.AdminService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -212,179 +212,23 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/getReportsByUsername")
-    public Result getReportsByUsername(@RequestParam String username) {
+    // 综合筛选接口
+    @GetMapping("/getFilteredItems")
+    public Result getFilteredItems(@RequestParam String type,
+                                   @RequestParam(required = false) String username,
+                                   @RequestParam(required = false) UserType userType,
+                                   @RequestParam(required = false) UserStatus userStatus) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<Report> reports = adminService.getReportsByUsername(username);
-            return Result.success(reports);
+            List<?> items = adminService.getFilteredItems(type, username, userType, userStatus);
+            return Result.success(items);
         } catch (Exception e) {
-            logger.error("根据用户名获取举报列表失败", e);
-            return Result.error("根据用户名获取举报列表失败");
+            logger.error("根据条件获取列表失败", e);
+            return Result.error("根据条件获取列表失败");
         }
     }
-
-    @GetMapping("/getReportsByUserType")
-    public Result getReportsByUserType(@RequestParam UserType userType) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Report> reports = adminService.getReportsByUserType(userType);
-            return Result.success(reports);
-        } catch (Exception e) {
-            logger.error("根据用户类型获取举报列表失败", e);
-            return Result.error("根据用户类型获取举报列表失败");
-        }
-    }
-
-    @GetMapping("/getReportsByUserStatus")
-    public Result getReportsByUserStatus(@RequestParam UserStatus userStatus) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Report> reports = adminService.getReportsByUserStatus(userStatus);
-            return Result.success(reports);
-        } catch (Exception e) {
-            logger.error("根据用户状态获取举报列表失败", e);
-            return Result.error("根据用户状态获取举报列表失败");
-        }
-    }
-
-    @GetMapping("/getAppealsByUsername")
-    public Result getAppealsByUsername(@RequestParam String username) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Appeal> appeals = adminService.getAppealsByUsername(username);
-            return Result.success(appeals);
-        } catch (Exception e) {
-            logger.error("根据用户名获取申诉列表失败", e);
-            return Result.error("根据用户名获取申诉列表失败");
-        }
-    }
-
-    @GetMapping("/getAppealsByUserType")
-    public Result getAppealsByUserType(@RequestParam UserType userType) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Appeal> appeals = adminService.getAppealsByUserType(userType);
-            return Result.success(appeals);
-        } catch (Exception e) {
-            logger.error("根据用户类型获取申诉列表失败", e);
-            return Result.error("根据用户类型获取申诉列表失败");
-        }
-    }
-
-    @GetMapping("/getAppealsByUserStatus")
-    public Result getAppealsByUserStatus(@RequestParam UserStatus userStatus) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Appeal> appeals = adminService.getAppealsByUserStatus(userStatus);
-            return Result.success(appeals);
-        } catch (Exception e) {
-            logger.error("根据用户状态获取申诉列表失败", e);
-            return Result.error("根据用户状态获取申诉列表失败");
-        }
-    }
-
-    @GetMapping("/getUsersByUsername")
-    public Result getUsersByUsername(@RequestParam String username) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<User> users = adminService.getUsersByUsername(username);
-            return Result.success(users);
-        } catch (Exception e) {
-            logger.error("根据用户名查询用户失败", e);
-            return Result.error("根据用户名查询用户失败");
-        }
-    }
-
-    // 根据用户类型查询用户
-    @GetMapping("/getUsersByUserType")
-    public Result getUsersByUserType(@RequestParam UserType userType) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<User> users = adminService.getUsersByUserType(userType);
-            return Result.success(users);
-        } catch (Exception e) {
-            logger.error("根据用户类型查询用户失败", e);
-            return Result.error("根据用户类型查询用户失败");
-        }
-    }
-
-    // 根据账号状态查询用户
-    @GetMapping("/getUsersByUserStatus")
-    public Result getUsersByUserStatus(@RequestParam UserStatus userStatus) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<User> users = adminService.getUsersByUserStatus(userStatus);
-            return Result.success(users);
-        } catch (Exception e) {
-            logger.error("根据账号状态查询用户失败", e);
-            return Result.error("根据账号状态查询用户失败");
-        }
-    }
-
-    // 根据用户名查询评论
-    @GetMapping("/getCommentsByUsername")
-    public Result getCommentsByUsername(@RequestParam String username) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Comment> comments = adminService.getCommentsByUsername(username);
-            return Result.success(comments);
-        } catch (Exception e) {
-            logger.error("根据用户名查询评论失败", e);
-            return Result.error("根据用户名查询评论失败");
-        }
-    }
-
-    // 根据用户类型查询评论
-    @GetMapping("/getCommentsByUserType")
-    public Result getCommentsByUserType(@RequestParam UserType userType) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Comment> comments = adminService.getCommentsByUserType(userType);
-            return Result.success(comments);
-        } catch (Exception e) {
-            logger.error("根据用户类型查询评论失败", e);
-            return Result.error("根据用户类型查询评论失败");
-        }
-    }
-
-    // 根据账号状态查询评论
-    @GetMapping("/getCommentsByUserStatus")
-    public Result getCommentsByUserStatus(@RequestParam UserStatus userStatus) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            List<Comment> comments = adminService.getCommentsByUserStatus(userStatus);
-            return Result.success(comments);
-        } catch (Exception e) {
-            logger.error("根据账号状态查询评论失败", e);
-            return Result.error("根据账号状态查询评论失败");
-        }
-    }
-
     @PostMapping("/warnUser")
     public Result warnUser(@RequestBody Map<String, Integer> params) {
         try {

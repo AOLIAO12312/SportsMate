@@ -3,7 +3,7 @@ package com.sportsmate.controller;
 import com.sportsmate.dto.MatchRequestDTO;
 import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.pojo.*;
-import com.sportsmate.service.CommentService;
+import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.service.MatchService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class MatchController {
     private MatchService matchService;
 
     @Autowired
-    private CommentService commentService;
+    private MatchCommentService commentService;
 
     @PostMapping("/request")
     private Result request(@RequestBody MatchRequestDTO dto){

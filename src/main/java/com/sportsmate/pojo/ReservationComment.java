@@ -5,10 +5,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Data
-public class CoachComment {
+public class ReservationComment {
     @NotNull
     private Integer id;  // 评价ID
 
@@ -28,5 +29,6 @@ public class CoachComment {
 
     private String coachComment;  // 对教练的文字评价
 
-    private LocalDateTime createdAt;  // 创建时间
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

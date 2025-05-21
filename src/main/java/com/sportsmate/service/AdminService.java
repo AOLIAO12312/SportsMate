@@ -5,7 +5,7 @@ import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.UserType;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.MatchComment;
 import java.util.List;
 
 public interface AdminService {
@@ -33,31 +33,8 @@ public interface AdminService {
     // 查看单个申诉
     Appeal getAppealById(Integer appealId);
 
-    //根据筛选举报，申述和评论
-    List<Report> getReportsByUsername(String username);
-
-    List<Report> getReportsByUserType(UserType userType);
-
-    List<Report> getReportsByUserStatus(UserStatus userStatus);
-
-    List<Appeal> getAppealsByUsername(String username);
-
-    List<Appeal> getAppealsByUserType(UserType userType);
-
-    List<Appeal> getAppealsByUserStatus(UserStatus userStatus);
-    // 根据用户名查询用户
-    List<User> getUsersByUsername(String username);
-    // 根据用户类型查询用户
-    List<User> getUsersByUserType(UserType userType);
-    // 根据账号状态查询用户
-    List<User> getUsersByUserStatus(UserStatus userStatus);
-
-    // 根据用户名查询评论
-    List<Comment> getCommentsByUsername(String username);
-    // 根据用户类型查询评论
-    List<Comment> getCommentsByUserType(UserType userType);
-    // 根据账号状态查询评论
-    List<Comment> getCommentsByUserStatus(UserStatus userStatus);
+    //筛选
+    <T> List<T> getFilteredItems(String type, String username, UserType userType, UserStatus userStatus);
     //警告用户
     void warnUser(Integer userId);
 }

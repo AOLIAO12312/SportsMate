@@ -1,22 +1,27 @@
 package com.sportsmate.controller;
 
-import com.sportsmate.pojo.CoachComment;
+import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.Result;
-import com.sportsmate.service.CoachCommentService;
+import com.sportsmate.service.ReservationCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/coachComment")
-public class CoachCommentController {
+@RequestMapping("/reservationComment")
+public class ReservationCommentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReservationCommentController.class);
 
     @Autowired
-    private CoachCommentService coachCommentService;
+    private ReservationCommentService coachCommentService;
 
     @PostMapping("/add")
-    public Result add(@RequestBody CoachComment coachComment) {
+    public Result add(@RequestBody ReservationComment coachComment) {
+        logger.info("接收到的评论数据: {}", coachComment);
         coachCommentService.addCoachComment(coachComment);
         return Result.success();
     }
@@ -33,7 +38,7 @@ public class CoachCommentController {
 
     // 修改教练评论
     @PostMapping("/update")
-    public Result update(@RequestBody CoachComment coachComment) {
+    public Result update(@RequestBody ReservationComment coachComment) {
         coachCommentService.updateCoachComment(coachComment);
         return Result.success();
     }
@@ -44,7 +49,7 @@ public class CoachCommentController {
         if (id == null) {
             return Result.error("id不能为空");
         }
-        CoachComment coachComment = coachCommentService.getCoachCommentById(id);
+        ReservationComment coachComment = coachCommentService.getCoachCommentById(id);
         if(coachComment == null){
             return Result.error("未找到该评论");
         }

@@ -1,30 +1,29 @@
 package com.sportsmate.service.impl;
 
-import com.sportsmate.mapper.CommentMapper;
+import com.sportsmate.mapper.MatchCommentMapper;
 import com.sportsmate.mapper.SuccessfulMatchMapper;
-import com.sportsmate.pojo.Comment;
+import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.SuccessfulMatchStatus;
-import com.sportsmate.service.CommentService;
+import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class CommentServiceImpl implements CommentService {
+public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Autowired
-    CommentMapper commentMapper;
+    MatchCommentMapper commentMapper;
 
     @Autowired
     SuccessfulMatchMapper successfulMatchMapper;
 
     @Override
-    public void addComment(Comment comment) {
+    public void addComment(MatchComment comment) {
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
@@ -36,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Integer id) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        Comment comment = new Comment();
+        MatchComment comment = new MatchComment();
         comment.setId(id);
         comment.setUserId(loginUserId);
         // 这里可以添加权限判断逻辑，确保只能删除自己的评论
@@ -44,7 +43,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateComment(Comment comment) {
+    public void updateComment(MatchComment comment) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
@@ -53,17 +52,17 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getCommentById(Integer id) {
+    public MatchComment getCommentById(Integer id) {
         return commentMapper.getCommentById(id);
     }
 
     @Override
-    public Comment findByMatchAndUserId(Integer userId, Integer matchId) {
+    public MatchComment findByMatchAndUserId(Integer userId, Integer matchId) {
         return commentMapper.findByMatchAndUserId(userId, matchId);
     }
 
     @Override
-    public void CheckMatchStatus(Comment comment) {
+    public void CheckMatchStatus(MatchComment comment) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
@@ -73,7 +72,7 @@ public class CommentServiceImpl implements CommentService {
         if (successfulMatch != null) {
             Integer opponentUserId = successfulMatch.getUserId1().equals(loginUserId) ? successfulMatch.getUserId2() : successfulMatch.getUserId1();
             // 检查另一个用户是否已经对该匹配进行了评论
-            Comment opponentComment = findByMatchAndUserId(opponentUserId, comment.getMatchId());
+            MatchComment opponentComment = findByMatchAndUserId(opponentUserId, comment.getMatchId());
             if (opponentComment != null) {
                 // 如果另一个用户也完成了评论，则将匹配状态修改为已完成
                 successfulMatch.setStatus(SuccessfulMatchStatus.已完成);

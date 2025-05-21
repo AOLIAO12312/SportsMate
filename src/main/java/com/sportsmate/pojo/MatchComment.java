@@ -5,10 +5,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Data
-public class Comment {
+public class MatchComment {
     @NotNull
     private Integer id;  // 评价ID
 
@@ -28,5 +29,6 @@ public class Comment {
     @Max(10)
     private Integer venueRating;  // 场馆评分（0-10）
 
-    private LocalDateTime createdAt;  // 创建时间
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
