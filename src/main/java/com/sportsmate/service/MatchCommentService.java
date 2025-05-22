@@ -19,5 +19,4 @@ public interface MatchCommentService {
     MatchComment findByMatchAndUserId(Integer userId, Integer matchId);
 
     void CheckMatchStatus(MatchComment comment);
-
 }

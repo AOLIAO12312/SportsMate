@@ -11,17 +11,26 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+
+import com.sportsmate.pojo.MatchComment;
+import org.apache.ibatis.annotations.*;
+
+
 @Mapper
 public interface MatchCommentMapper {
 
-    @Insert("insert into comment(user_id,match_id,opponent_or_coach_rating,venue_rating,created_at)"+
-    "values(#{userId},#{matchId},#{opponentOrCoachRating},#{venueRating},#{createdAt})")
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
+    @Insert("INSERT INTO comment(user_id, match_id, opponent_or_coach_rating, venue_rating, created_at) " +
+            "VALUES(#{userId}, #{matchId}, #{opponentRating}, #{venueRating}, #{createdAt})")
     void addComment(MatchComment comment);
 
     @Delete("delete from comment where id = #{id}")
     void deleteComment(Integer id);
 
-    @Update("update comment set user_id = #{userId}, match_id = #{matchId}, opponent_or_coach_rating = #{opponentOrCoachRating}, " +
+    @Update("update comment set user_id = #{userId}, match_id = #{matchId}, opponent_or_coach_rating = #{opponentRating}, " +
             "venue_rating = #{venueRating}, created_at = #{createdAt} where id = #{id}")
     void updateComment(MatchComment comment);
 
@@ -53,6 +62,4 @@ public interface MatchCommentMapper {
 
     @Select("SELECT * FROM comment")
     List<MatchComment> getAllComments();
-
-
 }

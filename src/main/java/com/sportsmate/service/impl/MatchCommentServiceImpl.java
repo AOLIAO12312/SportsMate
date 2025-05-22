@@ -35,6 +35,12 @@ public class MatchCommentServiceImpl implements MatchCommentService {
             throw new IllegalArgumentException("你没有权限对该比赛进行评论");
         }
 
+        // 检查该比赛的该用户是否已经有评论
+        MatchComment existingComment = commentMapper.findByMatchAndUserId(loginUserId, comment.getMatchId());
+        if (existingComment != null) {
+            throw new IllegalArgumentException("已有评论，请勿重复提交");
+        }
+
         commentMapper.addComment(comment);
     }
 

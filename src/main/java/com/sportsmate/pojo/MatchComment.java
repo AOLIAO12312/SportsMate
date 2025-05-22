@@ -22,7 +22,7 @@ public class MatchComment {
     @NotNull
     @Min(0)
     @Max(10)
-    private Integer opponentOrCoachRating;  // 对手/教练评分（0-10）
+    private Integer opponentRating;  // 对手/教练评分（0-10）
 
     @NotNull
     @Min(0)
