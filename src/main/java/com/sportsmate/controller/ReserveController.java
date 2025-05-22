@@ -12,10 +12,8 @@ import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/reserve")
@@ -64,8 +62,48 @@ public class ReserveController {
         return Result.success(dtos);
     }
 
-    //预约教练，指定教练id和时间id
+    @GetMapping("/availableTimeTable")
+    public Result availableTimeTable(@RequestParam Integer coachUserId){
+        User user = userService.findByUserId(coachUserId);
+        if(user == null || user.getUserType() != UserType.教练){
+            return Result.error("对应教练用户不存在");
+        }
 
+        // 定义节次时间段
+        LocalTime[][] periods = new LocalTime[][] {
+                { LocalTime.of(8, 0), LocalTime.of(10, 0) },
+                { LocalTime.of(10, 0), LocalTime.of(12, 0) },
+                { LocalTime.of(14, 0), LocalTime.of(16, 0) },
+                { LocalTime.of(16, 0), LocalTime.of(18, 0) },
+                { LocalTime.of(19, 0), LocalTime.of(22, 0) }
+        };
+
+        // 初始化课程表 Map<Weekday, int[5]>
+        Map<Weekday, int[]> timetable = new HashMap<>();
+        for (Weekday day : Weekday.values()) {
+            timetable.put(day, new int[5]); // 默认为0
+        }
+
+        // 遍历所有 AvailableTime
+        for (AvailableTime availableTime : availableTimeService.findByUserId(coachUserId)) {
+            Weekday day = availableTime.getWeekday();
+            LocalTime start = availableTime.getStartTime();
+            LocalTime end = availableTime.getEndTime();
+
+            int[] slots = timetable.get(day);
+            for (int i = 0; i < periods.length; i++) {
+                // 如果 availableTime 的时间段和当前节次有重叠，则标记为1
+                if (start.isBefore(periods[i][1]) && end.isAfter(periods[i][0])) {
+                    slots[i] = 1;
+                }
+            }
+        }
+
+        return Result.success(timetable);
+    }
+
+
+    //预约教练，指定教练id和时间id
     @PostMapping("/requestReservation")
     public Result requestReservation(Integer coachUserId,Integer availableTimeId){
         Map<String,Object> claims = ThreadLocalUtil.get();
