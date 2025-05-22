@@ -33,4 +33,6 @@ public class Report {
     @NotNull
     @Enumerated(EnumType.STRING)
     private HandleStatus status = HandleStatus.未处理;
+
+    private String replyMessage;
 }

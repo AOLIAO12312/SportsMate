@@ -47,7 +47,7 @@ public interface UserMapper {
     @Update("UPDATE user_addresses SET country = #{country}, state = #{state}, city = #{city}, district = #{district}, street = #{street}, postal_code = #{postalCode}, address_type = #{addressType}, updated_at = NOW() WHERE id = #{id}")
     void updateAddress(UserAddress userAddress);
 
-    @Insert("INSERT INTO reports (reporter_id, reported_id, reason, match_id, comment_id, status) VALUES (#{reporterId}, #{reportedId}, #{reportReason}, #{matchId}, #{commentId}, '未处理')")
+    @Insert("INSERT INTO reports (reporter_id, reported_id, reason, match_id, comment_id, status) VALUES (#{reporterId}, #{reportedId}, #{reason}, #{matchId}, #{commentId}, '未处理')")
     void addReport(Report report);
 
     @Insert("INSERT INTO appeals (appellant_id, reason, status) VALUES (#{appellantId}, #{reason}, '未处理')")

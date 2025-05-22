@@ -32,18 +32,16 @@ public interface ReservationCommentMapper {
     @Select("select * from coach_comment where user_id = #{userId} and coach_reservation_id = #{reservationId}")
     ReservationComment findByUserAndCoachId(Integer userId, Integer reservationId);
 
-    @Select("<script>" +
-            "SELECT * FROM coach_comment " +
-            "<where>" +
-            "  user_id IN (" +
-            "    SELECT id FROM users " +
-            "    <where>" +
-            "      <if test='username != null'>username = #{username}</if> " +
-            "      <if test='userType != null'>AND user_type = #{userType}</if> " +
-            "      <if test='userStatus != null'>AND status = #{userStatus}</if> " +
-            "    </where>" +
-            "  )" +
-            "</where>" +
-            "</script>")
-    List<ReservationComment> getCommentsByFilters(String username, UserType userType, UserStatus userStatus);;
+    // ReservationCommentMapper
+    @Select("SELECT * FROM coach_comment WHERE user_id = (SELECT id FROM users WHERE username = #{username})")
+    List<ReservationComment> getCommentsByUsername(String username);
+
+    @Select("SELECT * FROM coach_comment WHERE coach_id = (SELECT id FROM users WHERE username = #{coachname})")
+    List<ReservationComment> getCommentsByCoachname(String coachname);
+
+    @Select("SELECT * FROM coach_comment WHERE user_id = (SELECT id FROM users WHERE username = #{username}) AND coach_id = (SELECT id FROM users WHERE username = #{coachname})")
+    List<ReservationComment> getCommentsByUsernameAndCoachname(String username, String coachname);
+
+    @Select("SELECT * FROM coach_comment")
+    List<ReservationComment> getAllComments();
 }

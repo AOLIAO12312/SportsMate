@@ -19,4 +19,6 @@ public class Appeal {
 
     @NotNull
     private HandleStatus status = HandleStatus.未处理; // 申诉状态
+
+    private String replyMessage; // 新增：处理回复信息
 }

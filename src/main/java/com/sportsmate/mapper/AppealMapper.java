@@ -20,24 +20,18 @@ public interface AppealMapper {
     @Select("SELECT * FROM appeals WHERE id = #{id}")
     Appeal getAppealById(Integer id);
 
-    @Update("UPDATE appeals SET status = #{status} WHERE id = #{id}")
-    void updateAppealStatus(@Param("id") Integer id, @Param("status") HandleStatus status);
+    @Update("UPDATE appeals SET status = #{status}, reply_message = #{replyMessage} WHERE id = #{id}")
+    void updateAppealStatus(@Param("id") Integer id, @Param("status") HandleStatus status, @Param("replyMessage") String replyMessage);
 
 
-    @Select("<script>" +
-            "SELECT * FROM appeals " +
-            "<where>" +
-            "  id IN (" +
-            "    SELECT id FROM users " +
-            "    <where>" +
-            "      <if test='username != null'>username = #{username}</if> " +
-            "      <if test='userType != null'>AND user_type = #{userType}</if> " +
-            "      <if test='userStatus != null'>AND status = #{userStatus}</if> " +
-            "    </where>" +
-            "  )" +
-            "</where>" +
-            "</script>")
-    List<Appeal> getAppealsByFilters(String username, UserType userType, UserStatus userStatus);
+    @Select("SELECT * FROM appeals WHERE appellant_id = (SELECT id FROM users WHERE username = #{appellantname})")
+    List<Appeal> getAppealsByAppellantname(String appellantname);
+
+    @Select("SELECT * FROM appeals WHERE status = #{status}")
+    List<Appeal> getAppealsByStatus(HandleStatus status);
+
+    @Select("SELECT * FROM appeals WHERE appellant_id = (SELECT id FROM users WHERE username = #{appellantname}) AND status = #{status}")
+    List<Appeal> getAppealsByAppellantnameAndStatus(String appellantname, HandleStatus status);
 
 
 }

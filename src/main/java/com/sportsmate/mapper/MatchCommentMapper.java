@@ -42,20 +42,17 @@ public interface MatchCommentMapper {
             "</script>")
     List<MatchComment> getCommentsByUserIds(List<Integer> userIds);
 
-    @Select("<script>" +
-            "SELECT * FROM comment " +
-            "<where>" +
-            "  user_id IN (" +
-            "    SELECT id FROM users " +
-            "    <where>" +
-            "      <if test='username != null'>username = #{username}</if> " +
-            "      <if test='userType != null'>AND user_type = #{userType}</if> " +
-            "      <if test='userStatus != null'>AND status = #{userStatus}</if> " +
-            "    </where>" +
-            "  )" +
-            "</where>" +
-            "</script>")
-    List<MatchComment> getCommentsByFilters(String username, UserType userType, UserStatus userStatus);
+    @Select("SELECT * FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1})")
+    List<MatchComment> getCommentsByUsername1(String username1);
+
+    @Select("SELECT * FROM comment WHERE match_id = #{match_id} LIMIT 2")
+    List<MatchComment> getCommentsByMatchId(Integer match_id);
+
+    @Select("SELECT * FROM comment WHERE user_id IN (SELECT id FROM users WHERE username IN (#{username1}, #{username2})) AND match_id IN (SELECT match_id FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1}) INTERSECT SELECT match_id FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username2}))")
+    List<MatchComment> getCommentsByUsername1AndUsername2(String username1, String username2);
+
+    @Select("SELECT * FROM comment")
+    List<MatchComment> getAllComments();
 
 
 }
