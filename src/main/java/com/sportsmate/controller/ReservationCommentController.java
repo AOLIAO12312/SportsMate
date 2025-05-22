@@ -22,8 +22,12 @@ public class ReservationCommentController {
     @PostMapping("/add")
     public Result add(@RequestBody ReservationComment coachComment) {
         logger.info("接收到的评论数据: {}", coachComment);
-        coachCommentService.addCoachComment(coachComment);
-        return Result.success();
+        try {
+            coachCommentService.addCoachComment(coachComment);
+            return Result.success();
+        } catch (IllegalArgumentException e) {
+            return Result.error(e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete")

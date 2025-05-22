@@ -29,9 +29,18 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         coachComment.setUserId(loginUserId);
         coachComment.setCreatedAt(LocalDateTime.now());
 
-        // 确保 coach_id 不为空
-        if (coachComment.getCoachId() == null) {
-            throw new IllegalArgumentException("coach_id 不能为空");
+        // 通过 coachReservationId 获取 CoachReservation 对象
+        CoachReservation coachReservation = coachReservationMapper.findById(coachComment.getCoachReservationId());
+        if (coachReservation == null) {
+            throw new IllegalArgumentException("未找到对应的预约记录");
+        }
+
+        // 从 CoachReservation 对象中获取 coachId 并设置到 ReservationComment 中
+        coachComment.setCoachId(coachReservation.getCoachId());
+
+        // 检查是否已有评论
+        if (checkComment(coachComment.getCoachReservationId())) {
+            throw new IllegalArgumentException("已有评论，请勿重复提交");
         }
 
         coachCommentMapper.addCoachComment(coachComment);
@@ -76,5 +85,12 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
             coachReservation.setStatus(ReservationStatus.已完成);
             coachReservationMapper.setStatus(coachReservation);
         }
+    }
+
+    @Override
+    public boolean checkComment(Integer coachReservationId) {
+        // 根据 coachReservationId 查询是否存在评论
+        ReservationComment comment = coachCommentMapper.findByCoachReservationId(coachReservationId);
+        return comment != null;
     }
 }

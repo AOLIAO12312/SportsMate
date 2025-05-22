@@ -28,6 +28,13 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
         comment.setCreatedAt(LocalDateTime.now());
+
+        // 新添加的判断逻辑
+        SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
+        if (successfulMatch == null || (!successfulMatch.getUserId1().equals(loginUserId) && !successfulMatch.getUserId2().equals(loginUserId))) {
+            throw new IllegalArgumentException("你没有权限对该比赛进行评论");
+        }
+
         commentMapper.addComment(comment);
     }
 

@@ -1,5 +1,6 @@
 package com.sportsmate.service;
 
+import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationComment;
 
 public interface ReservationCommentService {
@@ -20,4 +21,7 @@ public interface ReservationCommentService {
 
     // 处理评论后更新预约状态
     void handleCommentAndUpdateReservationStatus(ReservationComment coachComment);
+
+    //
+    boolean checkComment(Integer coachReservationId);
 }

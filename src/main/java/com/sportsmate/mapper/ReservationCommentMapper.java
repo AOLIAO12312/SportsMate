@@ -44,4 +44,8 @@ public interface ReservationCommentMapper {
 
     @Select("SELECT * FROM coach_comment")
     List<ReservationComment> getAllComments();
+
+    @Select("SELECT * FROM coach_comment WHERE coach_reservation_id = #{coachReservationId}")
+    ReservationComment findByCoachReservationId(Integer coachReservationId);
+
 }
