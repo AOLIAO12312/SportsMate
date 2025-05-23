@@ -24,6 +24,7 @@ public class ReservationCommentController {
     @PostMapping("/add")
     public Result add(@RequestBody ReservationComment coachComment) {
         logger.info("接收到的评论数据: {}", coachComment);
+
         try {
             coachCommentService.addCoachComment(coachComment);
             return Result.success();
