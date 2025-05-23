@@ -27,22 +27,42 @@ public interface MatchCommentMapper {
             "VALUES(#{userId}, #{matchId}, #{opponentRating}, #{venueRating}, #{createdAt})")
     void addComment(MatchComment comment);
 
+
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Delete("delete from comment where id = #{id}")
     void deleteComment(Integer id);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Update("update comment set user_id = #{userId}, match_id = #{matchId}, opponent_or_coach_rating = #{opponentRating}, " +
             "venue_rating = #{venueRating}, created_at = #{createdAt} where id = #{id}")
     void updateComment(MatchComment comment);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("select * from comment where id = #{id}")
     MatchComment getCommentById(Integer id);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("select * from comment where user_id = #{userId} and match_id = #{matchId}")
     MatchComment findByMatchAndUserId(Integer userId, Integer matchId);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("SELECT * FROM comment WHERE user_id = #{userId}")
     List<MatchComment> getCommentsByUserId(Integer userId);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("<script>" +
             "SELECT * FROM comment WHERE user_id IN " +
             "<foreach item='item' index='index' collection='userIds' open='(' separator=',' close=')'>" +
@@ -50,16 +70,29 @@ public interface MatchCommentMapper {
             "</foreach>" +
             "</script>")
     List<MatchComment> getCommentsByUserIds(List<Integer> userIds);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("SELECT * FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1})")
     List<MatchComment> getCommentsByUsername1(String username1);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("SELECT * FROM comment WHERE match_id = #{match_id} LIMIT 2")
     List<MatchComment> getCommentsByMatchId(Integer match_id);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("SELECT * FROM comment WHERE user_id IN (SELECT id FROM users WHERE username IN (#{username1}, #{username2})) AND match_id IN (SELECT match_id FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1}) INTERSECT SELECT match_id FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username2}))")
     List<MatchComment> getCommentsByUsername1AndUsername2(String username1, String username2);
-
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
     @Select("SELECT * FROM comment")
     List<MatchComment> getAllComments();
+
 }

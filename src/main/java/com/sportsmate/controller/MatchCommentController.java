@@ -5,8 +5,9 @@ import com.sportsmate.pojo.Result;
 import com.sportsmate.service.MatchCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.Map;
+import com.sportsmate.utils.ThreadLocalUtil;
 
 @RestController
 @RequestMapping("/matchComment")
@@ -39,16 +40,11 @@ public class MatchCommentController {
         return Result.success();
     }
 
-    // 获取评论信息
     @GetMapping("/get")
-    public Result get(@RequestParam Integer id) {
-        if (id == null) {
-            return Result.error("id不能为空");
-        }
-        MatchComment comment = commentService.getCommentById(id);
-        if(comment == null){
-            return Result.error("未找到该评论");
-        }
-        return Result.success(comment);
+    public Result get() {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer loginUserId = (Integer) claims.get("id");
+        List<MatchComment> comments = commentService.getCommentsByUserId(loginUserId);
+        return Result.success(comments);
     }
 }

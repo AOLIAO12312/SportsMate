@@ -2,6 +2,7 @@ package com.sportsmate.service;
 
 import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationComment;
+import java.util.List;
 
 public interface ReservationCommentService {
     //添加教练评论
@@ -24,4 +25,7 @@ public interface ReservationCommentService {
 
     //
     boolean checkComment(Integer coachReservationId);
+
+    // 获取用户发布的所有预约评论
+    List<ReservationComment> getCommentsByUserId(Integer userId);
 }

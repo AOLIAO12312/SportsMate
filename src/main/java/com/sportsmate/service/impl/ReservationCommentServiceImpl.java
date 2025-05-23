@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.List;
 
 @Service
 public class ReservationCommentServiceImpl implements ReservationCommentService {
@@ -104,5 +105,10 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         // 根据 coachReservationId 查询是否存在评论
         ReservationComment comment = coachCommentMapper.findByCoachReservationId(coachReservationId);
         return comment != null;
+    }
+
+    @Override
+    public List<ReservationComment> getCommentsByUserId(Integer userId) {
+        return coachCommentMapper.getCommentsByUserId(userId);
     }
 }

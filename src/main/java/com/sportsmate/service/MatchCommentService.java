@@ -1,7 +1,7 @@
 package com.sportsmate.service;
 
 import com.sportsmate.pojo.MatchComment;
-
+import java.util.List;
 public interface MatchCommentService {
     //添加评论
     void addComment(MatchComment comment);
@@ -19,4 +19,9 @@ public interface MatchCommentService {
     MatchComment findByMatchAndUserId(Integer userId, Integer matchId);
 
     void CheckMatchStatus(MatchComment comment);
+
+    // 获取用户发布的所有比赛评论
+    List<MatchComment> getCommentsByUserId(Integer userId);
+
+
 }

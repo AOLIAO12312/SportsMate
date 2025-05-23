@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.List;
 
 @Service
 public class MatchCommentServiceImpl implements MatchCommentService {
@@ -24,7 +25,7 @@ public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Override
     public void addComment(MatchComment comment) {
-        Map<String,Object> claims = ThreadLocalUtil.get();
+        Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         comment.setUserId(loginUserId);
         comment.setCreatedAt(LocalDateTime.now());
@@ -100,5 +101,11 @@ public class MatchCommentServiceImpl implements MatchCommentService {
                 successfulMatchMapper.updateStatus(successfulMatch.getId(), successfulMatch.getStatus());
             }
         }
+
+
+    }
+    @Override
+    public List<MatchComment> getCommentsByUserId(Integer userId) {
+        return commentMapper.getCommentsByUserId(userId);
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.List;
+import com.sportsmate.utils.ThreadLocalUtil;
 
 import java.util.Map;
 
@@ -49,14 +51,10 @@ public class ReservationCommentController {
 
     // 获取教练评论信息
     @GetMapping("/get")
-    public Result get(@RequestParam Integer id) {
-        if (id == null) {
-            return Result.error("id不能为空");
-        }
-        ReservationComment coachComment = coachCommentService.getCoachCommentById(id);
-        if(coachComment == null){
-            return Result.error("未找到该评论");
-        }
-        return Result.success(coachComment);
+    public Result get() {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer loginUserId = (Integer) claims.get("id");
+        List<ReservationComment> comments = coachCommentService.getCommentsByUserId(loginUserId);
+        return Result.success(comments);
     }
 }
