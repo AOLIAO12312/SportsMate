@@ -5,6 +5,7 @@ import com.sportsmate.mapper.CoachReservationMapper;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationStatus;
+import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.service.ReservationCommentService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,10 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         if (checkComment(coachComment.getCoachReservationId())) {
             throw new IllegalArgumentException("已有评论，请勿重复提交");
         }
-
+        CoachReservation coachReservation1 = coachReservationMapper.findById(coachComment.getCoachReservationId());
+        if (coachReservation1 == null || (!coachReservation1.getUserId().equals(loginUserId) )) {
+            throw new IllegalArgumentException("你没有权限对该预约进行评论");
+        }
         coachCommentMapper.addCoachComment(coachComment);
         handleCommentAndUpdateReservationStatus(coachComment);
     }
@@ -56,6 +60,10 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         coachComment.setId(id);
         coachComment.setUserId(loginUserId);
         // 这里可以添加权限判断逻辑，确保只能删除自己的评论
+        CoachReservation coachReservation1 = coachReservationMapper.findById(coachComment.getCoachReservationId());
+        if (coachReservation1 == null || (!coachReservation1.getUserId().equals(loginUserId) )) {
+            throw new IllegalArgumentException("你没有权限对该预约进行删除");
+        }
         coachCommentMapper.deleteCoachComment(id);
     }
 
@@ -65,6 +73,10 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         Integer loginUserId = (Integer) claims.get("id");
         coachComment.setUserId(loginUserId);
         // 这里可以添加权限判断逻辑，确保只能修改自己的评论
+        CoachReservation coachReservation1 = coachReservationMapper.findById(coachComment.getCoachReservationId());
+        if (coachReservation1 == null || (!coachReservation1.getUserId().equals(loginUserId) )) {
+            throw new IllegalArgumentException("你没有权限对该预约进行更新");
+        }
         coachCommentMapper.updateCoachComment(coachComment);
     }
 

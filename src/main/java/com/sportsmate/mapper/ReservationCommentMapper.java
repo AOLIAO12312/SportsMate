@@ -36,11 +36,11 @@ public interface ReservationCommentMapper {
     @Select("SELECT * FROM coach_comment WHERE user_id = (SELECT id FROM users WHERE username = #{username})")
     List<ReservationComment> getCommentsByUsername(String username);
 
-    @Select("SELECT * FROM coach_comment WHERE coach_id = (SELECT id FROM users WHERE username = #{coachname})")
-    List<ReservationComment> getCommentsByCoachname(String coachname);
+    @Select("SELECT * FROM coach_comment WHERE coach_id = (SELECT id FROM users WHERE username = #{coachName})")
+    List<ReservationComment> getCommentsByCoachname(String coachName);
 
     @Select("SELECT * FROM coach_comment WHERE user_id = (SELECT id FROM users WHERE username = #{username}) AND coach_id = (SELECT id FROM users WHERE username = #{coachname})")
-    List<ReservationComment> getCommentsByUsernameAndCoachname(String username, String coachname);
+    List<ReservationComment> getCommentsByUsernameAndCoachname(String username, String coachName);
 
     @Select("SELECT * FROM coach_comment")
     List<ReservationComment> getAllComments();

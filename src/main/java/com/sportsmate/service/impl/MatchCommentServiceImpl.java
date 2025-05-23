@@ -51,6 +51,10 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         MatchComment comment = new MatchComment();
         comment.setId(id);
         comment.setUserId(loginUserId);
+        SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
+        if (successfulMatch == null || (!successfulMatch.getUserId1().equals(loginUserId) && !successfulMatch.getUserId2().equals(loginUserId))) {
+            throw new IllegalArgumentException("你没有权限对该比赛进行删除");
+        }
         // 这里可以添加权限判断逻辑，确保只能删除自己的评论
         commentMapper.deleteComment(id);
     }
@@ -59,8 +63,12 @@ public class MatchCommentServiceImpl implements MatchCommentService {
     public void updateComment(MatchComment comment) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
+
         comment.setUserId(loginUserId);
-        // 这里可以添加权限判断逻辑，确保只能修改自己的评论
+        SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
+        if (successfulMatch == null || (!successfulMatch.getUserId1().equals(loginUserId) && !successfulMatch.getUserId2().equals(loginUserId))) {
+            throw new IllegalArgumentException("你没有权限对该比赛进行更新");
+        }
         commentMapper.updateComment(comment);
     }
 
