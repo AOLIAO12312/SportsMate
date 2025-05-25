@@ -67,11 +67,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addReport(Report report) {
+        report.setCreatedAt(LocalDateTime.now());
         userMapper.addReport(report);
     }
 
     @Override
     public void addAppeal(Appeal appeal) {
+        appeal.setCreatedAt(LocalDateTime.now());
         userMapper.addAppeal(appeal);
     }
 

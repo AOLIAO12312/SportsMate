@@ -3,6 +3,9 @@ package com.sportsmate.pojo;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+
+import javax.persistence.Column;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -21,4 +24,7 @@ public class Appeal {
     private HandleStatus status = HandleStatus.未处理; // 申诉状态
 
     private String replyMessage; // 新增：处理回复信息
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

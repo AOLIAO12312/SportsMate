@@ -6,6 +6,9 @@ import lombok.Data;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Column;
+
+import java.time.LocalDateTime;
 
 @Data
 public class Report {
@@ -35,4 +38,7 @@ public class Report {
     private HandleStatus status = HandleStatus.未处理;
 
     private String replyMessage;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
