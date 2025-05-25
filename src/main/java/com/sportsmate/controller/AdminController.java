@@ -9,6 +9,7 @@ import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.HandleStatus;
+import com.sportsmate.pojo.PageBean;
 import com.sportsmate.service.AdminService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -190,43 +191,48 @@ public class AdminController {
 
     // 筛选用户
     @GetMapping("/getFilteredUsers")
-    public Result getFilteredUsers(@RequestParam(required = false) String username,
+    public Result getFilteredUsers(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                   @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                   @RequestParam(required = false) String username,
                                    @RequestParam(required = false) UserType userType,
                                    @RequestParam(required = false) UserStatus userStatus) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<User> users = adminService.getFilteredUsers(username, userType, userStatus);
-            return Result.success(users);
+            PageBean<User> pb = adminService.getFilteredUsers(pageNum, pageSize, username, userType, userStatus);
+            return Result.success(pb);
         } catch (Exception e) {
             logger.error("筛选用户失败", e);
             return Result.error("筛选用户失败");
         }
     }
+
     @GetMapping("/getFilteredMatchComments")
-    public Result getFilteredMatchComments(@RequestParam(required = false) String username1,
+    public Result getFilteredMatchComments(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                           @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                           @RequestParam(required = false) String username1,
                                            @RequestParam(required = false) String username2,
                                            @RequestParam(required = false) Integer matchId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<MatchComment> matchComments;
+            PageBean<MatchComment> pb;
             if (username1 != null && username2 == null && matchId == null) {
                 // 通过 username1 查询某个用户发起的所有评论
-                matchComments = adminService.getMatchCommentsByUsername1(username1);
+                pb = adminService.getMatchCommentsByUsername1(pageNum, pageSize, username1);
             } else if (username1 == null && username2 == null && matchId != null) {
                 // 通过 match_id 查询比赛对应的下面的两条评论
-                matchComments = adminService.getMatchCommentsByMatchId(matchId);
+                pb = adminService.getMatchCommentsByMatchId(pageNum, pageSize, matchId);
             } else if (username1 != null && username2 != null && matchId == null) {
                 // 通过 username1 和 username2 查询两个用户一起打过的所有比赛的对应所有的比赛评论
-                matchComments = adminService.getMatchCommentsByUsername1AndUsername2(username1, username2);
+                pb = adminService.getMatchCommentsByUsername1AndUsername2(pageNum, pageSize, username1, username2);
             } else {
                 // 没有参数则返回所有 matchcomments
-                matchComments = adminService.getAllMatchComments();
+                pb = adminService.getAllMatchComments(pageNum, pageSize);
             }
-            return Result.success(matchComments);
+            return Result.success(pb);
         } catch (Exception e) {
             logger.error("筛选比赛评论失败", e);
             return Result.error("筛选比赛评论失败");
@@ -234,27 +240,29 @@ public class AdminController {
     }
 
     @GetMapping("/getFilteredReservationComments")
-    public Result getFilteredReservationComments(@RequestParam(required = false) String username,
+    public Result getFilteredReservationComments(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                                 @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                                 @RequestParam(required = false) String username,
                                                  @RequestParam(required = false) String coachName) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<ReservationComment> reservationComments;
+            PageBean<ReservationComment> pb;
             if (username != null && coachName == null) {
                 // 通过 username 查询该用户发起的评论
-                reservationComments = adminService.getReservationCommentsByUsername(username);
+                pb = adminService.getReservationCommentsByUsername(pageNum, pageSize, username);
             } else if (username == null && coachName != null) {
                 // 通过 coachname 查询该教练接受的评论
-                reservationComments = adminService.getReservationCommentsByCoachname(coachName);
+                pb = adminService.getReservationCommentsByCoachname(pageNum, pageSize, coachName);
             } else if (username != null && coachName != null) {
                 // 通过 username 和 coachname 筛选所有以该用户发起，该教练接受的评论
-                reservationComments = adminService.getReservationCommentsByUsernameAndCoachname(username, coachName);
+                pb = adminService.getReservationCommentsByUsernameAndCoachname(pageNum, pageSize, username, coachName);
             } else {
                 // 没有参数则返回所有 reservationcomments
-                reservationComments = adminService.getAllReservationComments();
+                pb = adminService.getAllReservationComments(pageNum, pageSize);
             }
-            return Result.success(reservationComments);
+            return Result.success(pb);
         } catch (Exception e) {
             logger.error("筛选预约评论失败", e);
             return Result.error("筛选预约评论失败");
@@ -262,89 +270,63 @@ public class AdminController {
     }
 
     @GetMapping("/getFilteredReports")
-    public Result getFilteredReports(@RequestParam(required = false) String reporterName,
-                                     @RequestParam(required = false) String reportedName,
+    public Result getFilteredReports(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                     @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                     @RequestParam(required = false) String reportername,
+                                     @RequestParam(required = false) String reportedname,
                                      @RequestParam(required = false) HandleStatus status) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<Report> reports;
-            if (reporterName != null && reportedName == null && status == null) {
-                // 通过 reportername 查询所有该用户发起的举报
-                reports = adminService.getReportsByReportername(reporterName);
-            } else if (reporterName == null && reportedName != null && status == null) {
-                // 通过 reportedname 查询所有该用户被举报的举报
-                reports = adminService.getReportsByReportedname(reportedName);
-            } else if (reporterName == null && reportedName == null && status != null) {
-                // 通过 status 查询所有该状态的举报
-                reports = adminService.getReportsByStatus(status);
-            } else if (reporterName != null && reportedName != null && status == null) {
-                // 通过 reportername 和 reportedname 综合查询
-                reports = adminService.getReportsByReporternameAndReportedname(reporterName, reportedName);
-            } else if (reporterName != null && reportedName == null && status != null) {
-                // 通过 reportername 和 status 综合查询
-                reports = adminService.getReportsByReporternameAndStatus(reporterName, status);
-            } else if (reporterName == null && reportedName != null && status != null) {
-                // 通过 reportedname 和 status 综合查询
-                reports = adminService.getReportsByReportednameAndStatus(reportedName, status);
-            } else if (reporterName != null && reportedName != null && status != null) {
-                // 通过 reportername、reportedname 和 status 综合查询
-                reports = adminService.getReportsByReporternameReportednameAndStatus(reporterName, reportedName, status);
+            PageBean<Report> pb;
+            if (reportername != null && reportedname == null && status == null) {
+                pb = adminService.getReportsByReportername(pageNum, pageSize, reportername);
+            } else if (reportername == null && reportedname != null && status == null) {
+                pb = adminService.getReportsByReportedname(pageNum, pageSize, reportedname);
+            } else if (reportername == null && reportedname == null && status != null) {
+                pb = adminService.getReportsByStatus(pageNum, pageSize, status);
+            } else if (reportername != null && reportedname != null && status == null) {
+                pb = adminService.getReportsByReporternameAndReportedname(pageNum, pageSize, reportername, reportedname);
+            } else if (reportername != null && reportedname == null && status != null) {
+                pb = adminService.getReportsByReporternameAndStatus(pageNum, pageSize, reportername, status);
+            } else if (reportername == null && reportedname != null && status != null) {
+                pb = adminService.getReportsByReportednameAndStatus(pageNum, pageSize, reportedname, status);
+            } else if (reportername != null && reportedname != null && status != null) {
+                pb = adminService.getReportsByReporternameReportednameAndStatus(pageNum, pageSize, reportername, reportedname, status);
             } else {
-                // 没有参数则返回所有 reports
-                reports = adminService.getAllReports();
+                pb = adminService.getAllReports(pageNum, pageSize);
             }
-            return Result.success(reports);
+            return Result.success(pb);
         } catch (Exception e) {
-            logger.error("筛选举报失败", e);
-            return Result.error("筛选举报失败");
+            logger.error("筛选举报评论失败", e);
+            return Result.error("筛选举报评论失败");
         }
     }
 
     @GetMapping("/getFilteredAppeals")
-    public Result getFilteredAppeals(@RequestParam(required = false) String appellantName,
+    public Result getFilteredAppeals(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                     @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                     @RequestParam(required = false) String appellantname,
                                      @RequestParam(required = false) HandleStatus status) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            List<Appeal> appeals;
-            if (appellantName != null && status == null) {
-                // 通过 appellantname 查询所有该用户发起的申诉
-                appeals = adminService.getAppealsByAppellantname(appellantName);
-            } else if (appellantName == null && status != null) {
-                // 通过 status 查询所有该状态的申诉
-                appeals = adminService.getAppealsByStatus(status);
-            } else if (appellantName != null && status != null) {
-                // 通过 appellantname 和 status 综合查询
-                appeals = adminService.getAppealsByAppellantnameAndStatus(appellantName, status);
+            PageBean<Appeal> pb;
+            if (appellantname != null && status == null) {
+                pb = adminService.getAppealsByAppellantname(pageNum, pageSize, appellantname);
+            } else if (appellantname == null && status != null) {
+                pb = adminService.getAppealsByStatus(pageNum, pageSize, status);
+            } else if (appellantname != null && status != null) {
+                pb = adminService.getAppealsByAppellantnameAndStatus(pageNum, pageSize, appellantname, status);
             } else {
-                // 没有参数则返回所有 appeals
-                appeals = adminService.getAllAppeals();
+                pb = adminService.getAllAppeals(pageNum, pageSize);
             }
-            return Result.success(appeals);
+            return Result.success(pb);
         } catch (Exception e) {
-            logger.error("筛选申诉失败", e);
-            return Result.error("筛选申诉失败");
-        }
-    }
-
-    @PostMapping("/warnUser")
-    public Result warnUser(@RequestBody Map<String, Integer> params) {
-        try {
-            if (!isAdmin()) {
-                return Result.error("没有管理员权限");
-            }
-            Integer userId = params.get("userId");
-            if (userId == null) {
-                return Result.error("未提供有效的用户ID");
-            }
-            adminService.warnUser(userId);
-            return Result.success();
-        } catch (Exception e) {
-            logger.error("警告用户失败", e);
-            return Result.error("警告用户失败");
+            logger.error("筛选申诉评论失败", e);
+            return Result.error("筛选申诉评论失败");
         }
     }
 }

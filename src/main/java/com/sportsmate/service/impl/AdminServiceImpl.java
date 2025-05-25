@@ -13,6 +13,11 @@ import com.sportsmate.pojo.User;
 import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.ReservationComment;
+import com.sportsmate.pojo.PageBean;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sportsmate.service.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,136 +147,234 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<User> getFilteredUsers(String username, UserType userType, UserStatus userStatus) {
-        try {
-            return userMapper.getUsersByFilters(username, userType, userStatus);
-        } catch (Exception e) {
-            logger.error("筛选用户失败", e);
-            throw e;
-        }
+    public PageBean<User> getFilteredUsers(Integer pageNum, Integer pageSize, String username, UserType userType, UserStatus userStatus) {
+        PageBean<User> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> users = userMapper.getUsersByFilters(username, userType, userStatus);
+        PageInfo<User> pageInfo = new PageInfo<>(users);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(users);
+        return pb;
     }
 
     @Override
-    public List<MatchComment> getMatchCommentsByUsername1(String username1) {
-        // 实现通过 username1 查询某个用户发起的所有评论的逻辑
-        // 可能需要调用 MatchCommentMapper 进行查询
-        return matchCommentMapper.getCommentsByUsername1(username1);
+    public PageBean<MatchComment> getMatchCommentsByUsername1(Integer pageNum, Integer pageSize, String username1) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1(username1);
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<MatchComment> getMatchCommentsByMatchId(Integer match_id) {
-        // 实现通过 match_id 查询比赛对应的下面的两条评论的逻辑
-        return matchCommentMapper.getCommentsByMatchId(match_id);
+    public PageBean<MatchComment> getMatchCommentsByMatchId(Integer pageNum, Integer pageSize, Integer match_id) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MatchComment> comments = matchCommentMapper.getCommentsByMatchId(match_id);
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<MatchComment> getMatchCommentsByUsername1AndUsername2(String username1, String username2) {
-        // 实现通过 username1 和 username2 查询两个用户一起打过的所有比赛的对应所有的比赛评论的逻辑
-        return matchCommentMapper.getCommentsByUsername1AndUsername2(username1, username2);
+    public PageBean<MatchComment> getMatchCommentsByUsername1AndUsername2(Integer pageNum, Integer pageSize, String username1, String username2) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1AndUsername2(username1, username2);
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<MatchComment> getAllMatchComments() {
-        // 实现返回所有比赛评论的逻辑
-        return matchCommentMapper.getAllComments();
-    }
-
-    // AdminServiceImpl 实现类
-    @Override
-    public List<ReservationComment> getReservationCommentsByUsername(String username) {
-        // 实现通过 username 查询该用户发起的评论的逻辑
-        return reservationCommentMapper.getCommentsByUsername(username);
-    }
-
-    @Override
-    public List<ReservationComment> getReservationCommentsByCoachname(String coachname) {
-        // 实现通过 coachname 查询该教练接受的评论的逻辑
-        return reservationCommentMapper.getCommentsByCoachname(coachname);
+    public PageBean<MatchComment> getAllMatchComments(Integer pageNum, Integer pageSize) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MatchComment> comments = matchCommentMapper.getAllComments();
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<ReservationComment> getReservationCommentsByUsernameAndCoachname(String username, String coachname) {
-        // 实现通过 username 和 coachname 筛选所有以该用户发起，该教练接受的评论的逻辑
-        return reservationCommentMapper.getCommentsByUsernameAndCoachname(username, coachname);
+    public PageBean<ReservationComment> getReservationCommentsByUsername(Integer pageNum, Integer pageSize, String username) {
+        PageBean<ReservationComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReservationComment> comments = reservationCommentMapper.getCommentsByUsername(username);
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<ReservationComment> getAllReservationComments() {
-        // 实现返回所有预约评论的逻辑
-        return reservationCommentMapper.getAllComments();
+    public PageBean<ReservationComment> getReservationCommentsByCoachname(Integer pageNum, Integer pageSize, String coachname) {
+        PageBean<ReservationComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReservationComment> comments = reservationCommentMapper.getCommentsByCoachname(coachname);
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReportername(String reportername) {
-        // 实现通过 reportername 查询所有该用户发起的举报的逻辑
-        return reportMapper.getReportsByReportername(reportername);
+    public PageBean<ReservationComment> getReservationCommentsByUsernameAndCoachname(Integer pageNum, Integer pageSize, String username, String coachname) {
+        PageBean<ReservationComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReservationComment> comments = reservationCommentMapper.getCommentsByUsernameAndCoachname(username, coachname);
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReportedname(String reportedname) {
-        // 实现通过 reportedname 查询所有该用户被举报的举报的逻辑
-        return reportMapper.getReportsByReportedname(reportedname);
+    public PageBean<ReservationComment> getAllReservationComments(Integer pageNum, Integer pageSize) {
+        PageBean<ReservationComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReservationComment> comments = reservationCommentMapper.getAllComments();
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByStatus(HandleStatus status) {
-        // 实现通过 status 查询所有该状态的举报的逻辑
-        return reportMapper.getReportsByStatus(status);
+    public PageBean<Report> getReportsByReportername(Integer pageNum, Integer pageSize, String reportername) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReportername(reportername);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReporternameAndReportedname(String reportername, String reportedname) {
-        // 实现通过 reportername 和 reportedname 综合查询的逻辑
-        return reportMapper.getReportsByReporternameAndReportedname(reportername, reportedname);
+    public PageBean<Report> getReportsByReportedname(Integer pageNum, Integer pageSize, String reportedname) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReportedname(reportedname);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReporternameAndStatus(String reportername, HandleStatus status) {
-        // 实现通过 reportername 和 status 综合查询的逻辑
-        return reportMapper.getReportsByReporternameAndStatus(reportername, status);
+    public PageBean<Report> getReportsByStatus(Integer pageNum, Integer pageSize, HandleStatus status) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByStatus(status);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReportednameAndStatus(String reportedname, HandleStatus status) {
-        // 实现通过 reportedname 和 status 综合查询的逻辑
-        return reportMapper.getReportsByReportednameAndStatus(reportedname, status);
+    public PageBean<Report> getReportsByReporternameAndReportedname(Integer pageNum, Integer pageSize, String reportername, String reportedname) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReporternameAndReportedname(reportername, reportedname);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Report> getReportsByReporternameReportednameAndStatus(String reportername, String reportedname, HandleStatus status) {
-        // 实现通过 reportername、reportedname 和 status 综合查询的逻辑
-        return reportMapper.getReportsByReporternameReportednameAndStatus(reportername, reportedname, status);
+    public PageBean<Report> getReportsByReporternameAndStatus(Integer pageNum, Integer pageSize, String reportername, HandleStatus status) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReporternameAndStatus(reportername, status);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Report> getAllReports() {
-        // 实现返回所有举报的逻辑
-        return reportMapper.getAllReports();
-    }
-
-    // AdminServiceImpl 实现类
-    @Override
-    public List<Appeal> getAppealsByAppellantname(String appellantname) {
-        // 实现通过 appellantname 查询所有该用户发起的申诉的逻辑
-        return appealMapper.getAppealsByAppellantname(appellantname);
-    }
-
-    @Override
-    public List<Appeal> getAppealsByStatus(HandleStatus status) {
-        // 实现通过 status 查询所有该状态的申诉的逻辑
-        return appealMapper.getAppealsByStatus(status);
+    public PageBean<Report> getReportsByReportednameAndStatus(Integer pageNum, Integer pageSize, String reportedname, HandleStatus status) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReportednameAndStatus(reportedname, status);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Appeal> getAppealsByAppellantnameAndStatus(String appellantname, HandleStatus status) {
-        // 实现通过 appellantname 和 status 综合查询的逻辑
-        return appealMapper.getAppealsByAppellantnameAndStatus(appellantname, status);
+    public PageBean<Report> getReportsByReporternameReportednameAndStatus(Integer pageNum, Integer pageSize, String reportername, String reportedname, HandleStatus status) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getReportsByReporternameReportednameAndStatus(reportername, reportedname, status);
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
     }
 
     @Override
-    public List<Appeal> getAllAppeals() {
-        // 实现返回所有申诉的逻辑
-        return appealMapper.getAllAppeals();
+    public PageBean<Report> getAllReports(Integer pageNum, Integer pageSize) {
+        PageBean<Report> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Report> reports = reportMapper.getAllReports();
+        PageInfo<Report> pageInfo = new PageInfo<>(reports);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(reports);
+        return pb;
+    }
+
+    @Override
+    public PageBean<Appeal> getAppealsByAppellantname(Integer pageNum, Integer pageSize, String appellantname) {
+        PageBean<Appeal> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Appeal> appeals = appealMapper.getAppealsByAppellantname(appellantname);
+        PageInfo<Appeal> pageInfo = new PageInfo<>(appeals);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(appeals);
+        return pb;
+    }
+
+    @Override
+    public PageBean<Appeal> getAppealsByStatus(Integer pageNum, Integer pageSize, HandleStatus status) {
+        PageBean<Appeal> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Appeal> appeals = appealMapper.getAppealsByStatus(status);
+        PageInfo<Appeal> pageInfo = new PageInfo<>(appeals);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(appeals);
+        return pb;
+    }
+
+    @Override
+    public PageBean<Appeal> getAppealsByAppellantnameAndStatus(Integer pageNum, Integer pageSize, String appellantname, HandleStatus status) {
+        PageBean<Appeal> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Appeal> appeals = appealMapper.getAppealsByAppellantnameAndStatus(appellantname, status);
+        PageInfo<Appeal> pageInfo = new PageInfo<>(appeals);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(appeals);
+        return pb;
+    }
+
+    @Override
+    public PageBean<Appeal> getAllAppeals(Integer pageNum, Integer pageSize) {
+        PageBean<Appeal> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<Appeal> appeals = appealMapper.getAllAppeals();
+        PageInfo<Appeal> pageInfo = new PageInfo<>(appeals);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(appeals);
+        return pb;
     }
 
     @Override
