@@ -34,6 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:5173") // 允许前端地址（开发阶段）
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .exposedHeaders("Authorization")
                 .allowCredentials(true) // 如果你需要携带 cookie
                 .maxAge(3600); // 预检请求缓存时间
     }
