@@ -147,12 +147,11 @@ public class AdminController {
 
     // 查看单个举报
     @GetMapping("/getReportById")
-    public Result getReportById(@RequestBody Map<String, Integer> params) {
+    public Result getReportById(@RequestParam Integer reportId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            Integer reportId = params.get("reportId");
             if (reportId == null) {
                 return Result.error("未提供有效的举报ID");
             }
@@ -169,12 +168,11 @@ public class AdminController {
 
     // 查看单个申诉
     @GetMapping("/getAppealById")
-    public Result getAppealById(@RequestBody Map<String, Integer> params) {
+    public Result getAppealById(@RequestParam Integer appealId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            Integer appealId = params.get("appealId");
             if (appealId == null) {
                 return Result.error("未提供有效的申诉ID");
             }
