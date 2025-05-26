@@ -38,4 +38,17 @@ public interface SuccessfulMatchMapper {
 
     @Update("UPDATE successful_matches SET status = #{status} WHERE id = #{id}")
     void updateStatus(Integer id, SuccessfulMatchStatus status);
+
+    @Select("<script>" +
+            "SELECT * FROM successful_matches " +
+            "WHERE (user_id1 = #{userId} OR user_id2 = #{userId}) " +
+            "<if test='status != null'>" +
+            "AND status = #{status} " +
+            "</if>" +
+            "ORDER BY created_at DESC" +
+            "</script>")
+    List<SuccessfulMatch> listByUserIdAndStatus(@Param("userId") Integer userId, @Param("status") SuccessfulMatchStatus status);
+
+
+
 }

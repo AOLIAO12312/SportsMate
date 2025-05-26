@@ -27,15 +27,14 @@ public interface UserMapper {
     @Select("select * from users where id=#{id}")
     User findByUserId(Integer id);
 
-    @Update("update users set gender=#{gender},phone=#{phone} where id=#{id} ")
+    @Update("UPDATE users SET gender = #{gender}, phone = #{phone}, birthday = #{birthday}, bio = #{bio} WHERE id = #{id}")
     void update(User user);
 
     @Update("update users set password=#{md5String} where id=#{id}")
     void updatePwd(String md5String, Integer id);
 
-
     @Insert("INSERT INTO user_addresses (user_id, country, state, city, district, street, postal_code, address_type, created_at, updated_at) " +
-                "VALUES (#{user.id}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{addressType}, NOW(), NOW())")
+                "VALUES (#{userId}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{addressType}, NOW(), NOW())")
     void addAddress(UserAddress userAddress);
 
     @Select("SELECT id FROM user_addresses WHERE user_id = #{userId} AND address_type = #{addressType}")
@@ -75,4 +74,16 @@ public interface UserMapper {
 
     @Update("UPDATE users SET status = #{userStatus} WHERE id = #{userId}")
     void updateUserStatus(Integer userId, UserStatus userStatus);
+
+    @Select("select * from user_addresses where user_id=#{userId}")
+    List<UserAddress> getAddress(Integer userId);
+
+    @Update("update users set reputation_score=#{newReputationScore} where id = #{id}")
+    void updateReputationScore(Integer id, int newReputationScore);
+
+    @Update("update users set status=#{userStatus} where id = #{id}")
+    void updateStatus(Integer id, UserStatus userStatus);
+
+    @Update("update users set rank_score=#{newRankScore} where id=#{id}")
+    void setRankScore(Integer id, Integer newRankScore);
 }

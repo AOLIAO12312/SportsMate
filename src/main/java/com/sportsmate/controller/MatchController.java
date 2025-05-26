@@ -46,8 +46,8 @@ public class MatchController {
 
 
     @GetMapping("/listRequests")
-    private Result listRequests(Integer pageNum,Integer pageSize){
-        PageBean<MatchRequestDTO> pb = matchService.listRequests(pageNum,pageSize);
+    private Result listRequests(Integer pageNum,Integer pageSize,String status){
+        PageBean<MatchRequestDTO> pb = matchService.listRequests(pageNum,pageSize,status);
         return Result.success(pb);
     }
 
@@ -67,10 +67,8 @@ public class MatchController {
     }
 
     @GetMapping("/listSuccessfulMatches")
-    private Result listSuccessfulMatches(Integer pageNum,Integer pageSize){
-        PageBean<SuccessfulMatchDTO> pb = matchService.listSuccessfulMatches(pageNum,pageSize);
+    private Result listSuccessfulMatches(Integer pageNum,Integer pageSize,String status){
+        PageBean<SuccessfulMatchDTO> pb = matchService.listSuccessfulMatches(pageNum,pageSize,status);
         return Result.success(pb);
     }
-
-
 }

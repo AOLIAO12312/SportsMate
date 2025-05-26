@@ -2,6 +2,7 @@ package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.Gender;
 import com.sportsmate.pojo.MatchRequest;
+import com.sportsmate.pojo.MatchRequestStatus;
 import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.annotations.*;
 
@@ -41,4 +42,16 @@ public interface MatchRequestMapper {
 
     @Update("update match_requests set status=#{status} where id=#{id}")
     void updateStatus(MatchRequest candidate);
+
+    // MyBatis 注解写法（若你用的是注解方式）
+    @Select("<script>" +
+            "SELECT * FROM match_requests " +
+            "WHERE user_id = #{userId} " +
+            "<if test='status != null'>" +
+            "AND status = #{status}" +
+            "</if>" +
+            "ORDER BY created_at DESC" +
+            "</script>")
+    List<MatchRequest> listByUserIdAndStatus(@Param("userId") Integer userId, @Param("status") MatchRequestStatus status);
+
 }

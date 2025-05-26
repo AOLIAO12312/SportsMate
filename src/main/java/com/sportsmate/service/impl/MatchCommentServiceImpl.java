@@ -2,9 +2,11 @@ package com.sportsmate.service.impl;
 
 import com.sportsmate.mapper.MatchCommentMapper;
 import com.sportsmate.mapper.SuccessfulMatchMapper;
+import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.SuccessfulMatchStatus;
+import com.sportsmate.pojo.User;
 import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MatchCommentServiceImpl implements MatchCommentService {
@@ -22,6 +25,9 @@ public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Autowired
     SuccessfulMatchMapper successfulMatchMapper;
+
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public void addComment(MatchComment comment) {
@@ -43,6 +49,10 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         }
 
         commentMapper.addComment(comment);
+        User opponentUser = userMapper.findByUserId(Objects.equals(successfulMatch.getUserId1(), loginUserId) ? successfulMatch.getUserId2() : successfulMatch.getUserId1());
+        Integer newRankScore = opponentUser.getRankScore();
+        newRankScore += (comment.getOpponentRating() - 5) * 6;
+        userMapper.setRankScore(opponentUser.getId(),newRankScore);
     }
 
     @Override

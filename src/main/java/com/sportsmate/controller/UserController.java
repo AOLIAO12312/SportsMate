@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sportsmate.pojo.User;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -152,8 +154,14 @@ public class UserController {
         String postalCode = params.get("postalCode");
         String addressTypeStr = params.get("addressType");
 
-        if (country == null || addressTypeStr == null) {
-            return Result.error("缺少必要参数");
+        // 校验所有字段是否都不为空
+        if (country == null || state == null || city == null || district == null
+                || street == null || postalCode == null || addressTypeStr == null
+                || country.trim().isEmpty() || state.trim().isEmpty()
+                || city.trim().isEmpty() || district.trim().isEmpty()
+                || street.trim().isEmpty() || postalCode.trim().isEmpty()
+                || addressTypeStr.trim().isEmpty()) {
+            return Result.error("所有地址相关参数均不能为空");
         }
 
         AddressType addressType;
@@ -164,7 +172,7 @@ public class UserController {
         }
 
         UserAddress userAddress = new UserAddress();
-        userAddress.setUser(userService.findByUserId(userId));
+        userAddress.setUserId(userId);
         userAddress.setCountry(country);
         userAddress.setState(state);
         userAddress.setCity(city);
@@ -207,12 +215,18 @@ public class UserController {
     public Result updateAddress(@RequestBody Map<String, String> params) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer userId = (Integer) claims.get("id");
-        String addressTypeStr = params.get("addressType");
 
-        if (addressTypeStr == null) {
-            return Result.error("缺少必要参数");
+        // 所有必填参数的key
+        List<String> requiredKeys = Arrays.asList("country", "state", "city", "district", "street", "postalCode", "addressType");
+
+        for (String key : requiredKeys) {
+            String value = params.get(key);
+            if (value == null || value.trim().isEmpty()) {
+                return Result.error("参数 " + key + " 不能为空");
+            }
         }
 
+        String addressTypeStr = params.get("addressType");
         AddressType addressType;
         try {
             addressType = AddressType.valueOf(addressTypeStr);
@@ -231,6 +245,15 @@ public class UserController {
 
         userService.updateAddress(userAddress, userId, addressType);
         return Result.success();
+    }
+
+
+    @GetMapping("/getAddress")
+    public Result getAddress(){
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+        List<UserAddress> userAddresses = userService.getAddress(userId);
+        return Result.success(userAddresses);
     }
 
 
