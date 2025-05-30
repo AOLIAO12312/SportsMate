@@ -6,6 +6,8 @@ import com.sportsmate.pojo.UserAddress;
 import com.sportsmate.pojo.AddressType;
 import com.sportsmate.pojo.UserType;
 
+import java.util.List;
+
 public interface UserService {
     //注册用户
     void register(String username, String passwd, UserType userType);
@@ -35,4 +37,6 @@ public interface UserService {
 
     //添加申述
     void addAppeal(Appeal appeal);
+
+    List<UserAddress> getAddress(Integer userId);
 }

@@ -13,7 +13,7 @@ public interface MatchService {
 
     MatchRequest findActiveRequestByUserId(Integer loginUserId);
 
-    PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize);
+    PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize,String status);
 
     MatchRequest findById(Integer requestId);
 
@@ -21,7 +21,7 @@ public interface MatchService {
 
     void addRequestWithAutoMatch(MatchRequestDTO dto, Integer loginUserId);
 
-    PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize);
+    PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize,String status);
 
     List<SuccessfulMatch> findActiveMatchByUserId(Integer loginUserId);
 }

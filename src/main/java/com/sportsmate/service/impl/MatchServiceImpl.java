@@ -58,7 +58,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize) {
+    public PageBean<MatchRequestDTO> listRequests(Integer pageNum, Integer pageSize, String status) {
         PageBean<MatchRequestDTO> pb = new PageBean<>();
 
         // 启动分页
@@ -68,10 +68,20 @@ public class MatchServiceImpl implements MatchService {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
 
-        // 执行分页查询（PageHelper 会自动拦截并处理）
-        List<MatchRequest> as = matchRequestMapper.list(loginUserId);
+        // 将字符串 status 转换为枚举
+        MatchRequestStatus requestStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                requestStatus = MatchRequestStatus.valueOf(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("非法的状态参数：" + status);
+            }
+        }
 
-        // 使用 PageInfo 安全获取分页信息
+        // 根据用户ID + 状态查询请求列表
+        List<MatchRequest> as = matchRequestMapper.listByUserIdAndStatus(loginUserId, requestStatus);
+
+        // 使用 PageInfo 获取分页信息
         PageInfo<MatchRequest> pageInfo = new PageInfo<>(as);
 
         // 转换成 DTO 列表
@@ -89,6 +99,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
 
+
     @Override
     public MatchRequest findById(Integer requestId) {
         return matchRequestMapper.findById(requestId);
@@ -97,6 +108,9 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void cancel(Integer requestId, String remark) {
         matchRequestMapper.cancel(requestId,remark);
+
+
+
         SuccessfulMatch successfulMatch =  successfulMatchMapper.findByRequestId(requestId);
         if(successfulMatch != null){
             successfulMatchMapper.cancel(successfulMatch.getId());
@@ -104,6 +118,28 @@ public class MatchServiceImpl implements MatchService {
                 matchRequestMapper.cancel(successfulMatch.getMatchRequestId2(),"对方原因:"+remark);
             }else {
                 matchRequestMapper.cancel(successfulMatch.getMatchRequestId1(),"对方原因:"+remark);
+            }
+            //减少本人的信誉积分
+            Map<String,Integer> claims = ThreadLocalUtil.get();
+            Integer loginId = claims.get("id");
+            // 查询并修改信誉积分
+            User user = userMapper.findByUserId(loginId);
+            if (user != null) {
+                int newReputationScore = user.getReputationScore() - 5; // 🚨 每次取消扣5分（你可以调整数值）
+
+                // 最低不低于0分
+                newReputationScore = Math.max(newReputationScore, 0);
+                user.setReputationScore(newReputationScore);
+                userMapper.updateReputationScore(user.getId(), newReputationScore);
+
+                // 判断信誉等级
+                if (newReputationScore < 80) {
+                    // 封禁用户
+                    userMapper.updateStatus(user.getId(), UserStatus.封禁);
+                    // 你可以记录封禁日志或发送通知
+                } else if (newReputationScore < 90) {
+                    userMapper.updateStatus(user.getId(), UserStatus.警告);
+                }
             }
         }
     }
@@ -171,29 +207,44 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize) {
+    public PageBean<SuccessfulMatchDTO> listSuccessfulMatches(Integer pageNum, Integer pageSize, String status) {
         PageBean<SuccessfulMatchDTO> pb = new PageBean<>();
 
+        // 启动分页
         PageHelper.startPage(pageNum, pageSize);
-        Map<String,Object> claims = ThreadLocalUtil.get();
+
+        // 获取当前登录用户ID
+        Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
 
-        // 这一步会被 PageHelper 自动分页
-        List<SuccessfulMatch> as = successfulMatchMapper.list(loginUserId);
+        // 解析枚举状态
+        SuccessfulMatchStatus matchStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                matchStatus = SuccessfulMatchStatus.valueOf(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("非法的状态参数：" + status);
+            }
+        }
 
-        // PageHelper 会返回 Page 类型（as 被代理）
-        Page<SuccessfulMatch> page = (Page<SuccessfulMatch>) as;
+        // 执行查询
+        List<SuccessfulMatch> matches = successfulMatchMapper.listByUserIdAndStatus(loginUserId, matchStatus);
 
+        // 使用 PageInfo 获取分页信息
+        PageInfo<SuccessfulMatch> pageInfo = new PageInfo<>(matches);
+
+        // 转 DTO 列表
         List<SuccessfulMatchDTO> dtos = new ArrayList<>();
-        for (SuccessfulMatch successfulMatch : as) {
-            SuccessfulMatchDTO dto = successfulMatchConverter.toDTO(successfulMatch);
+        for (SuccessfulMatch match : matches) {
+            SuccessfulMatchDTO dto = successfulMatchConverter.toDTO(match);
             dtos.add(dto);
         }
 
-        pb.setTotal(page.getTotal());
+        pb.setTotal(pageInfo.getTotal());
         pb.setItems(dtos);
         return pb;
     }
+
 
     @Override
     public List<SuccessfulMatch> findActiveMatchByUserId(Integer loginUserId) {

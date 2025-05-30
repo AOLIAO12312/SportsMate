@@ -1,6 +1,8 @@
 package com.sportsmate.pojo;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,11 +14,11 @@ public class UserAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;  // 地址ID
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;  // 用户ID（外键，关联到用户表的id）
+    @JsonIgnore
+    private Integer userId;  // 用户ID（外键，关联到用户表的id）
 
     @Column(nullable = false)
     private String country;  // 国家

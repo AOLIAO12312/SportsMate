@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addAddress(UserAddress userAddress) {
-        Integer userId = userAddress.getUser().getId();
+        Integer userId = userAddress.getUserId();
         AddressType addressType = userAddress.getAddressType();
         int count = userMapper.countAddressesByUserIdAndType(userId, addressType);
         if (count > 0) {
@@ -75,6 +76,11 @@ public class UserServiceImpl implements UserService {
     public void addAppeal(Appeal appeal) {
         appeal.setCreatedAt(LocalDateTime.now());
         userMapper.addAppeal(appeal);
+    }
+
+    @Override
+    public List<UserAddress> getAddress(Integer userId) {
+        return userMapper.getAddress(userId);
     }
 
     @Override

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,9 @@ public class User {
     @Column(nullable = false, length = 10)
     private Gender gender = Gender.其他;
 
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type", nullable = false)
     private UserType userType;
@@ -40,6 +44,9 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Column(name = "bio", length = 255)
+    private String bio;
+
     @Column(name = "rank_score")
     private Integer rankScore = 1200;
 
@@ -51,34 +58,4 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
-
-    // 以下非必要字段统一忽略 JSON 返回，避免过多冗余数据暴露
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "coach")
-    private Set<AvailableTime> availableTimes;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private Set<UserAddress> addresses;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private Set<CoachReservation> coachReservations;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "coach")
-    private Set<CoachReservation> reservationsAsCoach;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private Set<MatchRequest> matchRequests;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user1")
-    private List<SuccessfulMatch> successfulMatchesAsUser1;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user2")
-    private List<SuccessfulMatch> successfulMatchesAsUser2;
 }
