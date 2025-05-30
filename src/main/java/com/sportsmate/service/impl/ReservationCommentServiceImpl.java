@@ -7,6 +7,7 @@ import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationStatus;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.service.ReservationCommentService;
+import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Override
     public void addCoachComment(ReservationComment coachComment) {
+        if (SensitiveWordUtil.containsForbiddenKeyword(coachComment.getCoachComment())) {
+            throw new IllegalArgumentException("有违禁词，请重新输入");
+        }
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         coachComment.setUserId(loginUserId);
@@ -70,6 +74,9 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Override
     public void updateCoachComment(ReservationComment coachComment) {
+        if (SensitiveWordUtil.containsForbiddenKeyword(coachComment.getCoachComment())) {
+            throw new IllegalArgumentException("有违禁词，请重新输入");
+        }
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         coachComment.setUserId(loginUserId);

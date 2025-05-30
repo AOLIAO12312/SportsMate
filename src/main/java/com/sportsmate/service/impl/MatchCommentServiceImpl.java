@@ -6,6 +6,7 @@ import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.SuccessfulMatchStatus;
 import com.sportsmate.service.MatchCommentService;
+import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
