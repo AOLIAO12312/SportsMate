@@ -22,6 +22,11 @@ public interface ReportMapper {
     @Update("UPDATE reports SET status = #{status}, reply_message = #{replyMessage} WHERE id = #{id}")
     void updateReportStatus(@Param("id") Integer id, @Param("status") HandleStatus status, @Param("replyMessage") String replyMessage);
 
+    @Select("SELECT * FROM reports WHERE reporter_id = #{reporterId} AND ((comment_id = #{commentId} AND match_id IS NULL) OR (match_id = #{matchId} AND comment_id IS NULL))")
+    Report getReportByReporterAndCommentOrMatch(Integer reporterId, Integer commentId, Integer matchId);
+
+    @Update("UPDATE reports SET reason = #{reason}, status = #{status}, reply_message = #{replyMessage} WHERE id = #{id}")
+    void updateReport(Report report);
 
     // ReportMapper
     @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername})")

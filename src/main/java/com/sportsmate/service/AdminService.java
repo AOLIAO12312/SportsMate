@@ -1,14 +1,7 @@
 package com.sportsmate.service;
 
-import com.sportsmate.pojo.Appeal;
-import com.sportsmate.pojo.Report;
-import com.sportsmate.pojo.User;
-import com.sportsmate.pojo.UserStatus;
-import com.sportsmate.pojo.UserType;
-import com.sportsmate.pojo.MatchComment;
-import com.sportsmate.pojo.ReservationComment;
-import com.sportsmate.pojo.HandleStatus;
-import com.sportsmate.pojo.PageBean;
+import com.sportsmate.pojo.*;
+
 import java.util.List;
 
 public interface AdminService {
@@ -37,7 +30,7 @@ public interface AdminService {
     Appeal getAppealById(Integer appealId);
 
     // 筛选用户
-    PageBean<User> getFilteredUsers(Integer pageNum, Integer pageSize, String username, UserType userType, UserStatus userStatus);
+    PageBean<UserWithCoachInfo> getFilteredUsers(Integer pageNum, Integer pageSize, String username, UserType userType, UserStatus userStatus, Integer userId);
 
     // 筛选matchcomment 接口
     PageBean<MatchComment> getMatchCommentsByUsername1(Integer pageNum, Integer pageSize, String username1);
