@@ -2,6 +2,8 @@ package com.sportsmate.controller;
 
 import com.sportsmate.mapper.ReservationCommentMapper;
 import com.sportsmate.mapper.SuccessfulMatchMapper;
+import com.sportsmate.mapper.ReportMapper;
+import com.sportsmate.mapper.AppealMapper;
 import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.Result;
 import com.sportsmate.pojo.UserType;
@@ -11,6 +13,7 @@ import com.sportsmate.pojo.Report;
 import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.ReservationComment;
+import com.sportsmate.pojo.HandleStatus;
 import com.sportsmate.service.CoachProfileService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.JwtUtil;
@@ -42,6 +45,10 @@ public class UserController {
     private ReservationCommentMapper reservationCommentMapper;
     @Autowired
     private SuccessfulMatchMapper successfulMatchMapper;
+    @Autowired
+    private ReportMapper reportMapper;
+    @Autowired
+    private AppealMapper appealMapper;
 
     @PostMapping("/register")
     public Result register(@Pattern(regexp = "^\\S{5,16}$") String username, @Pattern(regexp = "^\\S{5,16}$") String passwd, String userType) {
@@ -257,24 +264,6 @@ public class UserController {
     }
 
 
-    @PostMapping("/addAppeal")
-    public Result addAppeal(@RequestBody Map<String, String> params) {
-        Map<String, Object> claims = ThreadLocalUtil.get();
-        Integer appellantId = (Integer) claims.get("id");
-        String reason = params.get("reason");
-
-        if (reason == null) {
-            return Result.error("缺少申诉理由");
-        }
-
-        Appeal appeal = new Appeal();
-        appeal.setAppellantId(appellantId);
-        appeal.setReason(reason);
-
-        userService.addAppeal(appeal);
-        return Result.success();
-    }
-
     @PostMapping("/addReport")
     public Result addReport(@RequestBody Map<String, Object> params) {
         Map<String, Object> claims = ThreadLocalUtil.get();
@@ -293,42 +282,52 @@ public class UserController {
             return Result.error("参数缺少");
         }
 
-        Integer reportedId = null;
-        if (commentId != null) {
-            ReservationComment reservationComment = reservationCommentMapper.getCoachCommentById(commentId);
-            if (reservationComment != null) {
-                reportedId = reservationComment.getCoachId();
-            } else {
-                return Result.error("未找到对应的预约评论");
-            }
-        } else if (matchId != null) {
-            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchId);
-            if (successfulMatch != null) {
-                if (successfulMatch.getUserId1().equals(reporterId)) {
-                    reportedId = successfulMatch.getUserId2();
-                } else if (successfulMatch.getUserId2().equals(reporterId)) {
-                    reportedId = successfulMatch.getUserId1();
-                } else {
-                    return Result.error("当前用户不是该比赛的参与者");
-                }
-            } else {
-                return Result.error("未找到对应的比赛记录");
-            }
+        // 检查是否已经存在举报记录
+        Report existingReport = reportMapper.getReportByReporterAndCommentOrMatch(reporterId, commentId, matchId);
+        if (existingReport != null) {
+            // 更新现有的举报记录
+            existingReport.setReason(reason);
+            existingReport.setStatus(HandleStatus.未处理);
+            reportMapper.updateReport(existingReport);
+            return Result.success("举报记录已更新");
         }
 
+        // 创建新的举报记录
         Report report = new Report();
         report.setReporterId(reporterId);
         report.setReason(reason);
-        report.setReportedId(reportedId);
-        report.setMatchId(matchId);
         report.setCommentId(commentId);
-
-        if (!report.isValid()) {
-            return Result.error("matchId 和 commentId 有且只能有一个");
-        }
-
+        report.setMatchId(matchId);
         userService.addReport(report);
         return Result.success();
-
     }
+
+    @PostMapping("/addAppeal")
+    public Result addAppeal(@RequestBody Map<String, String> params) {
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer appellantId = (Integer) claims.get("id");
+        String reason = params.get("reason");
+
+        if (reason == null) {
+            return Result.error("缺少申诉理由");
+        }
+
+        // 检查是否已经存在申诉记录
+        Appeal existingAppeal = appealMapper.getAppealByAppellantId(appellantId);
+        if (existingAppeal != null) {
+            // 更新现有的申诉记录
+            existingAppeal.setReason(reason);
+            existingAppeal.setStatus(HandleStatus.未处理);
+            appealMapper.updateAppeal(existingAppeal);
+            return Result.success("申诉记录已更新");
+        }
+
+        // 创建新的申诉记录
+        Appeal appeal = new Appeal();
+        appeal.setAppellantId(appellantId);
+        appeal.setReason(reason);
+        userService.addAppeal(appeal);
+        return Result.success();
+    }
+
 }

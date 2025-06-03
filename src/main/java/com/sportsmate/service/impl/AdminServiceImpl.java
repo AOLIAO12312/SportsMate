@@ -5,6 +5,7 @@ import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.mapper.ReportMapper;
 import com.sportsmate.mapper.AppealMapper;
 import com.sportsmate.mapper.ReservationCommentMapper;
+import com.sportsmate.mapper.CoachProfileMapper;
 import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.HandleStatus;
@@ -14,8 +15,9 @@ import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserStatus;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.PageBean;
-
+import com.sportsmate.pojo.UserWithCoachInfo;
 import com.github.pagehelper.Page;
+import com.sportsmate.pojo.CoachProfile;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sportsmate.service.AdminService;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -45,6 +48,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private ReservationCommentMapper reservationCommentMapper;
+
+    @Autowired
+    private CoachProfileMapper coachProfileMapper;
 
     @Override
     public List<Report> getReports() {
@@ -147,13 +153,25 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public PageBean<User> getFilteredUsers(Integer pageNum, Integer pageSize, String username, UserType userType, UserStatus userStatus) {
-        PageBean<User> pb = new PageBean<>();
+    public PageBean<UserWithCoachInfo> getFilteredUsers(Integer pageNum, Integer pageSize, String username, UserType userType, UserStatus userStatus, Integer userId) {
+        PageBean<UserWithCoachInfo> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
-        List<User> users = userMapper.getUsersByFilters(username, userType, userStatus);
+        List<User> users = userMapper.getUsersByFilters(username, userType, userStatus, userId);
         PageInfo<User> pageInfo = new PageInfo<>(users);
+
+        List<UserWithCoachInfo> userWithCoachInfos = new ArrayList<>();
+        for (User user : users) {
+            UserWithCoachInfo userWithCoachInfo = new UserWithCoachInfo();
+            userWithCoachInfo.setUser(user);
+            if (user.getUserType() == UserType.教练) {
+                CoachProfile coachProfile = coachProfileMapper.findByUserId(user.getId());
+                userWithCoachInfo.setCoachProfile(coachProfile);
+            }
+            userWithCoachInfos.add(userWithCoachInfo);
+        }
+
         pb.setTotal(pageInfo.getTotal());
-        pb.setItems(users);
+        pb.setItems(userWithCoachInfos);
         return pb;
     }
 

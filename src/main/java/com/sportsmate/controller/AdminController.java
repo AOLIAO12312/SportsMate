@@ -10,6 +10,7 @@ import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.HandleStatus;
 import com.sportsmate.pojo.PageBean;
+import com.sportsmate.pojo.UserWithCoachInfo;
 import com.sportsmate.service.AdminService;
 import com.sportsmate.service.UserService;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -193,12 +194,13 @@ public class AdminController {
                                    @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                                    @RequestParam(required = false) String username,
                                    @RequestParam(required = false) UserType userType,
-                                   @RequestParam(required = false) UserStatus userStatus) {
+                                   @RequestParam(required = false) UserStatus userStatus,
+                                   @RequestParam(required = false) Integer userId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
-            PageBean<User> pb = adminService.getFilteredUsers(pageNum, pageSize, username, userType, userStatus);
+            PageBean<UserWithCoachInfo> pb = adminService.getFilteredUsers(pageNum, pageSize, username, userType, userStatus, userId);
             return Result.success(pb);
         } catch (Exception e) {
             logger.error("筛选用户失败", e);
@@ -325,6 +327,23 @@ public class AdminController {
         } catch (Exception e) {
             logger.error("筛选申诉评论失败", e);
             return Result.error("筛选申诉评论失败");
+        }
+    }
+    @PostMapping("/warnUser")
+    public Result warnUser(@RequestBody Map<String, Integer> params) {
+        try {
+            if (!isAdmin()) {
+                return Result.error("没有管理员权限");
+            }
+            Integer userId = params.get("userId");
+            if (userId == null) {
+                return Result.error("未提供有效的用户ID");
+            }
+            adminService.warnUser(userId);
+            return Result.success();
+        } catch (Exception e) {
+            logger.error("警告用户失败", e);
+            return Result.error("警告用户失败");
         }
     }
 }

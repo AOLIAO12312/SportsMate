@@ -20,6 +20,12 @@ public interface AppealMapper {
     @Select("SELECT * FROM appeals WHERE id = #{id}")
     Appeal getAppealById(Integer id);
 
+    @Select("SELECT * FROM appeals WHERE appellant_id = #{appellantId}")
+    Appeal getAppealByAppellantId(Integer appellantId);
+
+    @Update("UPDATE appeals SET reason = #{reason}, status = #{status}, reply_message = #{replyMessage} WHERE id = #{id}")
+    void updateAppeal(Appeal appeal);
+
     @Update("UPDATE appeals SET status = #{status}, reply_message = #{replyMessage} WHERE id = #{id}")
     void updateAppealStatus(@Param("id") Integer id, @Param("status") HandleStatus status, @Param("replyMessage") String replyMessage);
 

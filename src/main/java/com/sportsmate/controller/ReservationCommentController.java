@@ -50,7 +50,7 @@ public class ReservationCommentController {
         return Result.success();
     }
 
-    // 获取教练评论信息
+    // 获取教练评论信息z
     @GetMapping("/get")
     public Result get() {
         Map<String, Object> claims = ThreadLocalUtil.get();
