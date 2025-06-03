@@ -11,3 +11,4 @@ public class CoachProfileDTO {
     private Float rating;
     private Boolean isActive;
 }
+

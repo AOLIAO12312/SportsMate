@@ -6,6 +6,7 @@ import com.sportsmate.mapper.ReportMapper;
 import com.sportsmate.mapper.AppealMapper;
 import com.sportsmate.mapper.ReservationCommentMapper;
 import com.sportsmate.mapper.CoachProfileMapper;
+import com.sportsmate.mapper.SportMapper;
 import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.Appeal;
 import com.sportsmate.pojo.HandleStatus;
@@ -36,6 +37,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private ReportMapper reportMapper;
+
+    @Autowired
+    private SportMapper sportMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -165,6 +169,12 @@ public class AdminServiceImpl implements AdminService {
             userWithCoachInfo.setUser(user);
             if (user.getUserType() == UserType.教练) {
                 CoachProfile coachProfile = coachProfileMapper.findByUserId(user.getId());
+                if (coachProfile.getCoachedSports() != null) {
+                    // 根据 coachedSports 的 id 查询对应的运动名称
+                    String sportName = sportMapper.getSportName(coachProfile.getCoachedSports());
+                    // CoachProfile 类中添加了 sportsName 字段
+                    coachProfile.setSportsName(sportName);
+                }
                 userWithCoachInfo.setCoachProfile(coachProfile);
             }
             userWithCoachInfos.add(userWithCoachInfo);
