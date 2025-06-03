@@ -47,9 +47,14 @@ public class VenueController {
         return Result.success();
     }
 
-    @GetMapping("/info")
+    @GetMapping("/infoByName")
     public Result info(@RequestParam String name){
         return Result.success(venueService.findByName(name));
+    }
+
+    @GetMapping("/infoById")
+    public Result info(@RequestParam Integer id){
+        return Result.success(venueService.findById(id));
     }
 
     @GetMapping("/list")
@@ -63,4 +68,6 @@ public class VenueController {
         venueService.batchInsertVenueSports(venueSports);
         return Result.success();
     }
+
+
 }

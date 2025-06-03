@@ -30,4 +30,9 @@ public class AvailableTimeServiceImpl implements AvailableTimeService {
     public AvailableTime findById(Integer availableTimeId) {
         return availableTimeMapper.findById(availableTimeId);
     }
+
+    @Override
+    public void deleteAvailableTime(Integer availableTimeId) {
+        availableTimeMapper.deleteAvailableTime(availableTimeId);
+    }
 }

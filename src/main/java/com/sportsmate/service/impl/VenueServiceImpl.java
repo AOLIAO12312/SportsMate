@@ -73,5 +73,17 @@ public class VenueServiceImpl implements VenueService {
         }
     }
 
+    @Override
+    public Venue findById(Integer id) {
+        Venue venue = venueMapper.findById(id);
+        if(venue == null){
+            return null;
+        }
+        List<VenueSport> vs = venueMapper.findSportsByVenueId(venue.getId());
+        List<VenueSportDTO> dto = venueSportConverter.toDTO(vs);
+        venue.setVenueSportDTOSet(dto);
+        return venue;
+    }
+
 
 }

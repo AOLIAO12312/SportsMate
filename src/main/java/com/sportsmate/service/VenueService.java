@@ -20,4 +20,6 @@ public interface VenueService {
     PageBean<VenueDTO> list(Integer pageNum, Integer pageSize);
 
     void batchInsertVenueSports(List<VenueSportDTO> venueSports);
+
+    Venue findById(Integer id);
 }

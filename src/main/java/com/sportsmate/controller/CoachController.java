@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/coach")
@@ -107,5 +108,21 @@ public class CoachController {
             dtos.add(dto);
         }
         return Result.success(dtos);
+    }
+
+    @DeleteMapping("/deleteAvailableTime")
+    public Result deleteAvailableTime(Integer availableTimeId){
+        AvailableTime availableTime = availableTimeService.findById(availableTimeId);
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer loginUserId = (Integer) claims.get("id");
+        if(availableTime == null){
+            return Result.error("该空闲时间记录不存在");
+        }
+        if(!Objects.equals(loginUserId, availableTime.getCoachId())){
+            return Result.error("你没有修改该记录的权限");
+        }
+
+        availableTimeService.deleteAvailableTime(availableTimeId);
+        return Result.success();
     }
 }

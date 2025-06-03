@@ -28,4 +28,7 @@ public interface VenueMapper {
 
     @Select("SELECT venue_id, sport_id, remain_spots FROM venue_sports WHERE venue_id = #{venueId}")
     List<VenueSport> findSportsByVenueId(@Param("venueId") Integer venueId);
+
+    @Select("select * from venues where id=#{id}")
+    Venue findById(Integer id);
 }

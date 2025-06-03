@@ -13,4 +13,6 @@ public interface AvailableTimeService {
     List<AvailableTime> findByUserId(Integer loginUserId);
 
     AvailableTime findById(Integer availableTimeId);
+
+    void deleteAvailableTime(Integer availableTimeId);
 }

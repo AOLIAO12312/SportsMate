@@ -2,10 +2,7 @@ package com.sportsmate.mapper;
 
 import com.sportsmate.pojo.AvailableTime;
 import com.sportsmate.pojo.Weekday;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -24,4 +21,7 @@ public interface AvailableTimeMapper {
 
     @Select("select * from available_time where id=#{availableTimeId}")
     AvailableTime findById(Integer availableTimeId);
+
+    @Delete("delete from available_time where id=#{availableTimeId}")
+    void deleteAvailableTime(Integer availableTimeId);
 }
