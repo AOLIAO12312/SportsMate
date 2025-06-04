@@ -173,7 +173,7 @@ public class AdminServiceImpl implements AdminService {
                     // 根据 coachedSports 的 id 查询对应的运动名称
                     String sportName = sportMapper.getSportName(coachProfile.getCoachedSports());
                     // CoachProfile 类中添加了 sportsName 字段
-                    coachProfile.setSportsName(sportName);
+                    userWithCoachInfo.setSportsName(sportName);
                 }
                 userWithCoachInfo.setCoachProfile(coachProfile);
             }

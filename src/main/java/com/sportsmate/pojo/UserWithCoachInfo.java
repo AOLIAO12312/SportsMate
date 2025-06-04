@@ -7,4 +7,5 @@ import lombok.Data;
 public class UserWithCoachInfo {
     private User user;
     private CoachProfile coachProfile;
+    private String sportsName;
 }
