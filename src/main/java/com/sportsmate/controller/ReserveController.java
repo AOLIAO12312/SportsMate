@@ -3,6 +3,7 @@ package com.sportsmate.controller;
 import com.sportsmate.converter.AvailableTimeConverter;
 import com.sportsmate.converter.CoachProfileConverter;
 import com.sportsmate.dto.AvailableTimeDTO;
+import com.sportsmate.dto.CoachCommentDTO;
 import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.pojo.*;
 import com.sportsmate.service.AvailableTimeService;
@@ -57,6 +58,17 @@ public class ReserveController {
         }
         CoachProfileDTO dto = coachProfileConverter.toDTO(coachProfile);
         return Result.success(dto);
+    }
+
+    @GetMapping("getCoachCommentById")
+    public Result getCoachCommentById(@RequestParam Integer pageNum,@RequestParam Integer pageSize,@RequestParam Integer coachId){
+
+        PageBean<CoachCommentDTO> pageBean = coachReservationService.getCoachCommentById(pageNum,pageSize,coachId);
+        if(pageBean == null){
+            return Result.error("参数错误");
+        }
+
+        return Result.success(pageBean);
     }
 
     //显示教练空闲时间，列表形式返回

@@ -1,15 +1,24 @@
 package com.sportsmate.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.sportsmate.converter.CoachCommentConverter;
+import com.sportsmate.dto.CoachCommentDTO;
+import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.mapper.CoachReservationMapper;
-import com.sportsmate.pojo.AvailableTime;
-import com.sportsmate.pojo.CoachReservation;
+import com.sportsmate.mapper.ReservationCommentMapper;
+import com.sportsmate.pojo.*;
 import com.sportsmate.service.CoachReservationService;
+import com.sportsmate.service.ReservationCommentService;
+import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.sportsmate.utils.DateUtil.getNextDateTime;
 
@@ -18,6 +27,12 @@ public class CoachReservationServiceImpl implements CoachReservationService {
 
     @Autowired
     private CoachReservationMapper coachReservationMapper;
+
+    @Autowired
+    private ReservationCommentMapper reservationCommentMapper;
+
+    @Autowired
+    private CoachCommentConverter coachCommentConverter;
 
     @Override
     public void requestReservation(Integer loginUserId, AvailableTime availableTime) {
@@ -66,4 +81,35 @@ public class CoachReservationServiceImpl implements CoachReservationService {
     public CoachReservation findById(Integer reservationId) {
         return coachReservationMapper.findById(reservationId);
     }
+
+    @Override
+    public PageBean<CoachCommentDTO> getCoachCommentById(Integer pageNum, Integer pageSize, Integer coachId) {
+        PageBean<CoachCommentDTO> pb = new PageBean<>();
+
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+
+        if(coachId == null){
+            return null;
+        }
+
+        // 执行查询
+        List<ReservationComment> comments = reservationCommentMapper.findCommentByCoachId(coachId);
+
+        // 使用 PageInfo 获取分页信息
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+
+        // 转 DTO 列表
+        List<CoachCommentDTO> dtos = new ArrayList<>();
+        for (ReservationComment comment : comments) {
+            CoachCommentDTO dto = coachCommentConverter.toDTO(comment);
+            dtos.add(dto);
+        }
+
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(dtos);
+        return pb;
+
+    }
+
 }
