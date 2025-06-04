@@ -1,6 +1,7 @@
 package com.sportsmate.controller;
 
 import com.sportsmate.converter.AvailableTimeConverter;
+import com.sportsmate.converter.CoachProfileConverter;
 import com.sportsmate.dto.AvailableTimeDTO;
 import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.pojo.*;
@@ -23,6 +24,9 @@ public class ReserveController {
     private CoachProfileService coachProfileService;
 
     @Autowired
+    private CoachProfileConverter coachProfileConverter;
+
+    @Autowired
     private AvailableTimeService availableTimeService;
 
     @Autowired
@@ -43,6 +47,16 @@ public class ReserveController {
             return Result.error("不存在该运动");
         }
         return Result.success(pb);
+    }
+
+    @GetMapping("getCoachInfoById")
+    public Result getCoachInfoById(@RequestParam Integer coachId){
+        CoachProfile coachProfile =  coachProfileService.findByUserId(coachId);
+        if(coachProfile == null){
+            return Result.error("Coach Not Exist");
+        }
+        CoachProfileDTO dto = coachProfileConverter.toDTO(coachProfile);
+        return Result.success(dto);
     }
 
     //显示教练空闲时间，列表形式返回

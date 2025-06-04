@@ -1,5 +1,7 @@
 package com.sportsmate.service.impl;
 
+import com.sportsmate.converter.CoachProfileConverter;
+import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.mapper.MatchCommentMapper;
 import com.sportsmate.mapper.UserMapper;
 import com.sportsmate.mapper.ReportMapper;
@@ -55,6 +57,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private CoachProfileMapper coachProfileMapper;
+
+    @Autowired
+    private CoachProfileConverter coachProfileConverter;
 
     @Override
     public List<Report> getReports() {
@@ -169,17 +174,14 @@ public class AdminServiceImpl implements AdminService {
             userWithCoachInfo.setUser(user);
             if (user.getUserType() == UserType.教练) {
                 CoachProfile coachProfile = coachProfileMapper.findByUserId(user.getId());
-                if (coachProfile.getCoachedSports() != null) {
-                    // 根据 coachedSports 的 id 查询对应的运动名称
-                    String sportName = sportMapper.getSportName(coachProfile.getCoachedSports());
+                if (coachProfile != null) {
+                    CoachProfileDTO dto = coachProfileConverter.toDTO(coachProfile);
                     // CoachProfile 类中添加了 sportsName 字段
-                    userWithCoachInfo.setSportsName(sportName);
+                    userWithCoachInfo.setCoachProfileDTO(dto);
                 }
-                userWithCoachInfo.setCoachProfile(coachProfile);
             }
             userWithCoachInfos.add(userWithCoachInfo);
         }
-
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(userWithCoachInfos);
         return pb;

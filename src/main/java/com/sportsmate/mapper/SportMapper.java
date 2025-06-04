@@ -30,6 +30,6 @@ public interface SportMapper {
     @Update("update sports set description=#{description} where sport_name=#{sportName}")
     void update(Sport sport);
 
-    @Select("select name from sports where id=#{sportId}")
+    @Select("select sport_name from sports where id=#{sportId}")
     String getSportName(Integer sportId);
 }
