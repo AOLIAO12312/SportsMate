@@ -1,13 +1,12 @@
 package com.sportsmate.converter;
 
 import com.sportsmate.dto.SuccessfulMatchDTO;
+import com.sportsmate.dto.VenueDTO;
 import com.sportsmate.mapper.MatchRequestMapper;
 import com.sportsmate.mapper.SportMapper;
 import com.sportsmate.mapper.UserMapper;
-import com.sportsmate.pojo.MatchRequest;
-import com.sportsmate.pojo.Sport;
-import com.sportsmate.pojo.SuccessfulMatch;
-import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.*;
+import com.sportsmate.service.VenueService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +25,9 @@ public class SuccessfulMatchConverter {
 
     @Autowired
     private MatchRequestMapper matchRequestMapper;
+
+    @Autowired
+    private VenueService venueService;
 
     public SuccessfulMatchDTO toDTO(SuccessfulMatch successfulMatch){
         SuccessfulMatchDTO dto = new SuccessfulMatchDTO();
@@ -56,6 +58,16 @@ public class SuccessfulMatchConverter {
         dto.setEndTime(successfulMatch.getEndTime());
         dto.setCreatedAt(successfulMatch.getCreatedAt());
         dto.setOpponentRemark(matchRequest.getRemark());
+
+        Venue venue =  venueService.findById(successfulMatch.getVenueId());
+        if(venue != null){
+            VenueDTO venueDTO = new VenueDTO();
+            venueDTO.setName(venue.getName());
+            venueDTO.setOpeningTime(venue.getOpeningTime());
+            venueDTO.setClosingTime(venue.getClosingTime());
+            venueDTO.setFullAddress(venue.getFullAddress());
+            dto.setVenueDTO(venueDTO);
+        }
 
         Sport sport = sportMapper.findBySportId(successfulMatch.getSportId());
         dto.setSportName(sport.getSportName());

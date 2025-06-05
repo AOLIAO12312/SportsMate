@@ -5,11 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.sportsmate.converter.CoachCommentConverter;
 import com.sportsmate.dto.CoachCommentDTO;
 import com.sportsmate.dto.SuccessfulMatchDTO;
+import com.sportsmate.dto.VenueDTO;
 import com.sportsmate.mapper.CoachReservationMapper;
 import com.sportsmate.mapper.ReservationCommentMapper;
 import com.sportsmate.pojo.*;
 import com.sportsmate.service.CoachReservationService;
 import com.sportsmate.service.ReservationCommentService;
+import com.sportsmate.service.VenueService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,11 +36,14 @@ public class CoachReservationServiceImpl implements CoachReservationService {
     @Autowired
     private CoachCommentConverter coachCommentConverter;
 
+    @Autowired
+    private VenueService venueService;
+
     @Override
-    public void requestReservation(Integer loginUserId, AvailableTime availableTime) {
+    public void requestReservation(Integer loginUserId, AvailableTime availableTime,Integer venueId) {
         LocalDateTime targetStartDateTime = getNextDateTime(availableTime.getWeekday(), availableTime.getStartTime());
         LocalDateTime targetEndDateTime = getNextDateTime(availableTime.getWeekday(),availableTime.getEndTime());
-// 验证距离当前时间是否大于等于1小时
+        // 验证距离当前时间是否大于等于1小时
         Duration duration = Duration.between(LocalDateTime.now(), targetStartDateTime);
 
         if (duration.toMinutes() < 60) {
@@ -59,17 +64,88 @@ public class CoachReservationServiceImpl implements CoachReservationService {
         coachReservation.setUserId(loginUserId);
         coachReservation.setStartTime(targetStartDateTime);
         coachReservation.setEndTime(targetEndDateTime);
+        coachReservation.setVenueId(venueId);
         coachReservationMapper.addReservation(coachReservation);
     }
 
     @Override
-    public List<CoachReservation> findByUserId(Integer loginUserId) {
-        return coachReservationMapper.findByUserId(loginUserId);
+    public PageBean<CoachReservation> findByUserId(Integer pageNum,Integer pageSize,Integer loginUserId,String status) {
+        PageBean<CoachReservation> pb = new PageBean<>();
+
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+
+        // 解析枚举状态
+        ReservationStatus reservationStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                reservationStatus = ReservationStatus.valueOf(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("非法的状态参数：" + status);
+            }
+        }
+
+        // 执行查询
+        List<CoachReservation> coachReservationList = coachReservationMapper.listByUserIdAndStatus(loginUserId, reservationStatus);
+
+        // 使用 PageInfo 获取分页信息
+        PageInfo<CoachReservation> pageInfo = new PageInfo<>(coachReservationList);
+
+        for(CoachReservation coachReservation:coachReservationList){
+            Integer venueId = coachReservation.getVenueId();
+            Venue venue = venueService.findById(venueId);
+            VenueDTO dto = new VenueDTO();
+            dto.setName(venue.getName());
+            dto.setOpeningTime(venue.getOpeningTime());
+            dto.setClosingTime(venue.getClosingTime());
+            dto.setFullAddress(venue.getFullAddress());
+            dto.setId(venueId);
+            coachReservation.setVenueDTO(dto);
+        }
+
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(coachReservationList);
+        return pb;
     }
 
     @Override
-    public Object findByCoachId(Integer loginUserId) {
-        return coachReservationMapper.findByCoachId(loginUserId);
+    public PageBean<CoachReservation> findByCoachId(Integer pageNum,Integer pageSize,Integer loginUserId,String status) {
+        PageBean<CoachReservation> pb = new PageBean<>();
+
+        // 启动分页
+        PageHelper.startPage(pageNum, pageSize);
+
+        // 解析枚举状态
+        ReservationStatus reservationStatus = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                reservationStatus = ReservationStatus.valueOf(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("非法的状态参数：" + status);
+            }
+        }
+
+        // 执行查询
+        List<CoachReservation> coachReservationList = coachReservationMapper.listByCoachIdAndStatus(loginUserId, reservationStatus);
+
+        // 使用 PageInfo 获取分页信息
+        PageInfo<CoachReservation> pageInfo = new PageInfo<>(coachReservationList);
+
+        for(CoachReservation coachReservation:coachReservationList){
+            Integer venueId = coachReservation.getVenueId();
+            Venue venue = venueService.findById(venueId);
+            VenueDTO dto = new VenueDTO();
+            dto.setName(venue.getName());
+            dto.setOpeningTime(venue.getOpeningTime());
+            dto.setClosingTime(venue.getClosingTime());
+            dto.setFullAddress(venue.getFullAddress());
+            dto.setId(venueId);
+            coachReservation.setVenueDTO(dto);
+        }
+
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(coachReservationList);
+        return pb;
     }
 
     @Override

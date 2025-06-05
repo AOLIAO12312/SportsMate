@@ -32,7 +32,7 @@ public class SuccessfulMatchDTO {
     private String sportName;  // 运动类型
 
     @NotNull
-    private String venueName;  // 场馆
+    private VenueDTO venueDTO;  // 场馆
 
     @Column(nullable = false)
     private LocalDateTime startTime;  // 起始时间

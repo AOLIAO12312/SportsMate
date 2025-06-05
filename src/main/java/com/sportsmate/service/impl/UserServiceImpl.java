@@ -84,6 +84,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserAddress getDefaultAddressById(Integer userId) {
+        return userMapper.getDefaultAddressById(userId,AddressType.默认);
+    }
+
+
+    @Override
     public void deleteAddress(Integer userId, AddressType addressType) {
         Integer addressId = userMapper.findAddressIdByUserIdAndType(userId, addressType);
         if (addressId != null) {

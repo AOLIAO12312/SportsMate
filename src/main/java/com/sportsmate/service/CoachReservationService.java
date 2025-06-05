@@ -8,11 +8,11 @@ import com.sportsmate.pojo.PageBean;
 import java.util.List;
 
 public interface CoachReservationService {
-    void requestReservation(Integer loginUserId, AvailableTime availableTime);
+    void requestReservation(Integer loginUserId, AvailableTime availableTime,Integer venueId);
 
-    List<CoachReservation> findByUserId(Integer loginUserId);
+    PageBean<CoachReservation> findByUserId(Integer pageNum,Integer pageSize,Integer loginUserId,String status);
 
-    Object findByCoachId(Integer loginUserId);
+    PageBean<CoachReservation> findByCoachId(Integer pageNum,Integer pageSize,Integer loginUserId,String status);
 
     void setStatus(CoachReservation coachReservation);
 

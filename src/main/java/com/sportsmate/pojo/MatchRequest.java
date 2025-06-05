@@ -25,11 +25,11 @@ public class MatchRequest {
     @Column(nullable = false)
     private Gender expectedOpponentGender = Gender.其他;  // 期望对手性别（枚举）
 
-    private AddressType addressType = AddressType.默认;
-
     private LocalDateTime startTime;  // 匹配的起始时间
 
     private LocalDateTime endTime;    // 匹配的结束时间
+
+    private Integer venueId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

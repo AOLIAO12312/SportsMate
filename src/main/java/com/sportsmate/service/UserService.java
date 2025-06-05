@@ -39,4 +39,6 @@ public interface UserService {
     void addAppeal(Appeal appeal);
 
     List<UserAddress> getAddress(Integer userId);
+
+    UserAddress getDefaultAddressById(Integer userId);
 }

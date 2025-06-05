@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class VenueDTO {
+    private Integer id;
     private String name;
     private String openingTime;
     private String closingTime;

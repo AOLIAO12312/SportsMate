@@ -20,7 +20,7 @@ public interface VenueMapper {
     @Update("update venues set name=#{name},country=#{country},state=#{state},city=#{city},district=#{district},street=#{street},postal_code=#{postalCode},full_address=#{fullAddress},opening_time=#{openingTime},closing_time=#{closingTime},notes=#{notes},phone=#{phone},updated_at=#{updatedAt} where id=#{id}")
     void update(Venue venue);
 
-    @Select("SELECT name, opening_time,closing_time,full_address FROM venues")
+    @Select("SELECT id,name, opening_time,closing_time,full_address FROM venues")
     List<VenueDTO> listSimple();
 
     @Insert("insert into venue_sports (venue_id,sport_id,remain_spots) values (#{venueId},#{sportId},#{remainSpots})")

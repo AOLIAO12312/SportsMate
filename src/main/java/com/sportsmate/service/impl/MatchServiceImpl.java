@@ -157,6 +157,7 @@ public class MatchServiceImpl implements MatchService {
                 incoming.getExpectedOpponentGender(),
                 incoming.getStartTime(),
                 incoming.getEndTime(),
+                incoming.getVenueId(),
                 loginUserId
         );
 
@@ -183,6 +184,7 @@ public class MatchServiceImpl implements MatchService {
                 successfulMatch.setMatchRequestId1(requestId1);
                 successfulMatch.setMatchRequestId2(requestId2);
                 successfulMatch.setSportId(incoming.getSportId());
+                successfulMatch.setVenueId(candidate.getVenueId());
                 successfulMatch.setCreatedAt(LocalDateTime.now());
                 successfulMatch.setStatus(SuccessfulMatchStatus.待完成);
 
@@ -254,7 +256,7 @@ public class MatchServiceImpl implements MatchService {
     private boolean isMutuallyMatched(MatchRequest a, MatchRequest b) {
         return a.getExpectedOpponentGender() == userMapper.findByUserId(b.getUserId()).getGender()  &&
                 b.getExpectedOpponentGender() == userMapper.findByUserId(a.getUserId()).getGender() &&
-                a.getSportId().equals(b.getSportId()) &&
+                a.getSportId().equals(b.getSportId()) && Objects.equals(a.getVenueId(), b.getVenueId()) &&
                 timeOverlaps(a.getStartTime(), a.getEndTime(), b.getStartTime(), b.getEndTime());
     }
 
