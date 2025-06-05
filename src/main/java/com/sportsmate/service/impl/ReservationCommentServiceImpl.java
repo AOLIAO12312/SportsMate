@@ -37,8 +37,11 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
         // 通过 coachReservationId 获取 CoachReservation 对象
         CoachReservation coachReservation = coachReservationMapper.findById(coachComment.getCoachReservationId());
-        if (coachReservation == null) {
+        if (coachReservation == null ) {
             throw new IllegalArgumentException("未找到对应的预约记录");
+        }
+        if(coachReservation.getStatus() != ReservationStatus.预约成功){
+            throw new IllegalArgumentException("当前不处于可评价状态");
         }
 
         // 从 CoachReservation 对象中获取 coachId 并设置到 ReservationComment 中

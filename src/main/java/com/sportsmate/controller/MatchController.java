@@ -5,6 +5,7 @@ import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.pojo.*;
 import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.service.MatchService;
+import com.sportsmate.service.VenueService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,9 @@ public class MatchController {
     @Autowired
     private MatchCommentService commentService;
 
+    @Autowired
+    private VenueService venueService;
+
     @PostMapping("/request")
     private Result request(@RequestBody MatchRequestDTO dto){
         Map<String, Object> claims = ThreadLocalUtil.get();
@@ -38,6 +42,10 @@ public class MatchController {
             if(commentService.findByMatchAndUserId(existingMatch.getId(),loginUserId) == null){
                 return Result.error("当前存在未完成(未评价)的比赛");
             }
+        }
+        Integer venueId = dto.getVenueId();
+        if(venueId == null || venueService.findById(venueId) == null){
+            return Result.error("该场馆不存在");
         }
 
         matchService.addRequestWithAutoMatch(dto, loginUserId);

@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper
 public interface MatchRequestMapper {
 
-    @Insert("insert into match_requests(user_id,sport_id,expected_opponent_gender,address_type,start_time,end_time,status,created_at) "+
-    "values (#{userId},#{sportId},#{expectedOpponentGender},#{addressType},#{startTime},#{endTime},#{status},#{createdAt})")
+    @Insert("insert into match_requests(user_id,sport_id,expected_opponent_gender,venue_id,start_time,end_time,status,created_at) "+
+    "values (#{userId},#{sportId},#{expectedOpponentGender},#{venueId},#{startTime},#{endTime},#{status},#{createdAt})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addRequest(MatchRequest matchRequest);
 
@@ -37,8 +37,9 @@ public interface MatchRequestMapper {
       AND (
         (#{startTime} <= end_time AND #{endTime} >= start_time)
       )
+      AND venue_id=#{venueId}
     """)
-    List<MatchRequest> findPotentialMatches(@NotNull Integer sportId, Gender expectedOpponentGender, LocalDateTime startTime, LocalDateTime endTime, Integer loginUserId);
+    List<MatchRequest> findPotentialMatches(@NotNull Integer sportId, Gender expectedOpponentGender, LocalDateTime startTime, LocalDateTime endTime,Integer venueId, Integer loginUserId);
 
     @Update("update match_requests set status=#{status} where id=#{id}")
     void updateStatus(MatchRequest candidate);

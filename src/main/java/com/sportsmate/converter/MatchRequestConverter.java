@@ -1,9 +1,12 @@
 package com.sportsmate.converter;
 
 import com.sportsmate.dto.MatchRequestDTO;
+import com.sportsmate.dto.VenueDTO;
 import com.sportsmate.mapper.SportMapper;
 import com.sportsmate.pojo.MatchRequest;
 import com.sportsmate.pojo.Sport;
+import com.sportsmate.pojo.Venue;
+import com.sportsmate.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,9 @@ public class MatchRequestConverter {
 
     @Autowired
     private SportMapper sportMapper;
+
+    @Autowired
+    private VenueService venueService;
 
     public MatchRequest toEntity(MatchRequestDTO dto){
         MatchRequest matchRequest = new MatchRequest();
@@ -23,7 +29,7 @@ public class MatchRequestConverter {
         }
         matchRequest.setUserId(dto.getUserId());
         matchRequest.setSportId(sport.getId());
-        matchRequest.setAddressType(dto.getAddressType());
+        matchRequest.setVenueId(dto.getVenueId());
         matchRequest.setExpectedOpponentGender(dto.getExpectedOpponentGender());
         matchRequest.setStartTime(dto.getStartTime());
         matchRequest.setEndTime(dto.getEndTime());
@@ -44,7 +50,17 @@ public class MatchRequestConverter {
         }
         dto.setSportName(sport.getSportName());  // 假设DTO中用的是名字，实体用的是ID
 
-        dto.setAddressType(matchRequest.getAddressType());
+        dto.setVenueId(matchRequest.getVenueId());
+        Venue venue =  venueService.findById(matchRequest.getVenueId());
+        if(venue != null){
+            VenueDTO venueDTO = new VenueDTO();
+            venueDTO.setId(matchRequest.getVenueId());
+            venueDTO.setName(venue.getName());
+            venueDTO.setOpeningTime(venue.getOpeningTime());
+            venueDTO.setClosingTime(venue.getClosingTime());
+            venueDTO.setFullAddress(venue.getFullAddress());
+            dto.setVenueDTO(venueDTO);
+        }
         dto.setExpectedOpponentGender(matchRequest.getExpectedOpponentGender());
         dto.setStartTime(matchRequest.getStartTime());
         dto.setEndTime(matchRequest.getEndTime());

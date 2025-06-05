@@ -1,8 +1,12 @@
 package com.sportsmate.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sportsmate.pojo.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,11 +28,13 @@ public class MatchRequestDTO {
     @Column(nullable = false)
     private Gender expectedOpponentGender = Gender.其他;  // 期望对手性别（枚举）
 
-    private AddressType addressType = AddressType.默认;
-
     private LocalDateTime startTime;  // 匹配的起始时间
 
     private LocalDateTime endTime;    // 匹配的结束时间
+
+    private Integer venueId;
+
+    private VenueDTO venueDTO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

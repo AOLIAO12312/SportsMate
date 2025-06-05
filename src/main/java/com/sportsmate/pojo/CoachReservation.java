@@ -2,6 +2,8 @@ package com.sportsmate.pojo;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sportsmate.dto.VenueDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -27,4 +29,8 @@ public class CoachReservation {
 
     private ReservationStatus status = ReservationStatus.待确认;  // 预约状态（枚举类型）
 
+    @JsonIgnore
+    private Integer venueId;
+
+    private VenueDTO venueDTO;
 }

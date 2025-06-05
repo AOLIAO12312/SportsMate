@@ -86,4 +86,7 @@ public interface UserMapper {
 
     @Update("update users set rank_score=#{newRankScore} where id=#{id}")
     void setRankScore(Integer id, Integer newRankScore);
+
+    @Select("select * from user_addresses where user_id=#{userId} and address_type=#{addressType}")
+    UserAddress getDefaultAddressById(Integer userId, AddressType addressType);
 }

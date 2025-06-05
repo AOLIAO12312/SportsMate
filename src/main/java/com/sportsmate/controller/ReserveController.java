@@ -3,12 +3,10 @@ package com.sportsmate.controller;
 import com.sportsmate.converter.AvailableTimeConverter;
 import com.sportsmate.converter.CoachProfileConverter;
 import com.sportsmate.dto.AvailableTimeDTO;
+import com.sportsmate.dto.CoachCommentDTO;
 import com.sportsmate.dto.CoachProfileDTO;
 import com.sportsmate.pojo.*;
-import com.sportsmate.service.AvailableTimeService;
-import com.sportsmate.service.CoachProfileService;
-import com.sportsmate.service.CoachReservationService;
-import com.sportsmate.service.UserService;
+import com.sportsmate.service.*;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +36,9 @@ public class ReserveController {
     @Autowired
     private CoachReservationService coachReservationService;
 
+    @Autowired
+    private VenueService venueService;
+
 
     //显示教练列表，按照运动
     @GetMapping("/listCoach")
@@ -57,6 +58,17 @@ public class ReserveController {
         }
         CoachProfileDTO dto = coachProfileConverter.toDTO(coachProfile);
         return Result.success(dto);
+    }
+
+    @GetMapping("getCoachCommentById")
+    public Result getCoachCommentById(@RequestParam Integer pageNum,@RequestParam Integer pageSize,@RequestParam Integer coachId){
+
+        PageBean<CoachCommentDTO> pageBean = coachReservationService.getCoachCommentById(pageNum,pageSize,coachId);
+        if(pageBean == null){
+            return Result.error("参数错误");
+        }
+
+        return Result.success(pageBean);
     }
 
     //显示教练空闲时间，列表形式返回
@@ -116,10 +128,9 @@ public class ReserveController {
         return Result.success(timetable);
     }
 
-
     //预约教练，指定教练id和时间id
     @PostMapping("/requestReservation")
-    public Result requestReservation(Integer coachUserId,Integer availableTimeId){
+    public Result requestReservation(Integer coachUserId,Integer availableTimeId,Integer venueId){
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
         User user = userService.findByUserId(coachUserId);
@@ -130,31 +141,34 @@ public class ReserveController {
         if(availableTime == null || !Objects.equals(availableTime.getCoachId(), coachUserId)){
             return Result.error("空闲时间不存在");
         }
+        if(venueId == null || venueService.findById(venueId) == null){
+            return Result.error("该场馆不存在");
+        }
 
-        coachReservationService.requestReservation(loginUserId,availableTime);
+        coachReservationService.requestReservation(loginUserId,availableTime,venueId);
         return Result.success();
     }
 
     //普通用户：返回预约记录
     @GetMapping("/listReservationUser")
-    public Result listReservationUser(){
-        //TODO:之后修改为分页查询
+    public Result listReservationUser(Integer pageNum,Integer pageSize,String status){
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        return Result.success(coachReservationService.findByUserId(loginUserId));
+
+        PageBean<CoachReservation> pb =  coachReservationService.findByUserId(pageNum,pageSize,loginUserId,status);
+
+        return Result.success(pb);
     }
 
     //教练：返回申请预约记录
     @GetMapping("/listReservationCoach")
-    public Result listReservationCoach(){
-        //TODO:之后修改为分页查询
+    public Result listReservationCoach(Integer pageNum,Integer pageSize,String status){
         Map<String,Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        User user = userService.findByUserId(loginUserId);
-        if(user.getUserType() != UserType.教练){
-            return Result.error("你没有查询权限");
-        }
-        return Result.success(coachReservationService.findByCoachId(loginUserId));
+
+        PageBean<CoachReservation> pb =  coachReservationService.findByCoachId(pageNum,pageSize,loginUserId,status);
+
+        return Result.success(pb);
     }
 
 
