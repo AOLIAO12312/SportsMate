@@ -289,6 +289,9 @@ public class UserController {
             } else {
                 return Result.error("未找到对应的预约评论");
             }
+            if (!reservationComment.getUserId().equals(reporterId) ) {
+                return Result.error("当前用户未参与该比赛");
+            }
         } else if (matchId != null) {
             SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchId);
             if (successfulMatch != null) {
