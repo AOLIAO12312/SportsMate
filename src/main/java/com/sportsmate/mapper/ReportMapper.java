@@ -13,8 +13,7 @@ import java.util.List;
 @Mapper
 public interface ReportMapper {
     // Report相关方法
-    @Select("SELECT * FROM reports")
-    List<Report> getAllReports();
+
 
     @Select("SELECT * FROM reports WHERE id = #{id}")
     Report getReportById(Integer id);
@@ -29,25 +28,28 @@ public interface ReportMapper {
     void updateReport(Report report);
 
     // ReportMapper
-    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername})")
+    @Select("SELECT * FROM reports ORDER BY created_at DESC")
+    List<Report> getAllReports();
+
+    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) ORDER BY created_at DESC")
     List<Report> getReportsByReportername(String reportername);
 
-    @Select("SELECT * FROM reports WHERE reported_id = (SELECT id FROM users WHERE username = #{reportedname})")
+    @Select("SELECT * FROM reports WHERE reported_id = (SELECT id FROM users WHERE username = #{reportedname}) ORDER BY created_at DESC")
     List<Report> getReportsByReportedname(String reportedname);
 
-    @Select("SELECT * FROM reports WHERE status = #{status}")
+    @Select("SELECT * FROM reports WHERE status = #{status} ORDER BY created_at DESC")
     List<Report> getReportsByStatus(HandleStatus status);
 
-    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND reported_id = (SELECT id FROM users WHERE username = #{reportedname})")
+    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND reported_id = (SELECT id FROM users WHERE username = #{reportedname}) ORDER BY created_at DESC")
     List<Report> getReportsByReporternameAndReportedname(String reportername, String reportedname);
 
-    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND status = #{status}")
+    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND status = #{status} ORDER BY created_at DESC")
     List<Report> getReportsByReporternameAndStatus(String reportername, HandleStatus status);
 
-    @Select("SELECT * FROM reports WHERE reported_id = (SELECT id FROM users WHERE username = #{reportedname}) AND status = #{status}")
+    @Select("SELECT * FROM reports WHERE reported_id = (SELECT id FROM users WHERE username = #{reportedname}) AND status = #{status} ORDER BY created_at DESC")
     List<Report> getReportsByReportednameAndStatus(String reportedname, HandleStatus status);
 
-    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND reported_id = (SELECT id FROM users WHERE username = #{reportedname}) AND status = #{status}")
+    @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND reported_id = (SELECT id FROM users WHERE username = #{reportedname}) AND status = #{status} ORDER BY created_at DESC")
     List<Report> getReportsByReporternameReportednameAndStatus(String reportername, String reportedname, HandleStatus status);
 }
 
