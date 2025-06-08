@@ -9,5 +9,6 @@ public class VenueDTO {
     private String openingTime;
     private String closingTime;
     private String fullAddress;
+    private Double rating;
 }
 

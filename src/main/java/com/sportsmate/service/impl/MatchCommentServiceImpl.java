@@ -3,10 +3,12 @@ package com.sportsmate.service.impl;
 import com.sportsmate.mapper.MatchCommentMapper;
 import com.sportsmate.mapper.SuccessfulMatchMapper;
 import com.sportsmate.mapper.UserMapper;
+import com.sportsmate.mapper.VenueMapper;
 import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.SuccessfulMatchStatus;
 import com.sportsmate.pojo.User;
+import com.sportsmate.pojo.Venue;
 import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -29,6 +31,9 @@ public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    VenueMapper venueMapper;
 
     @Override
     public void addComment(MatchComment comment) {
@@ -54,6 +59,19 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         Integer newRankScore = opponentUser.getRankScore();
         newRankScore += (comment.getOpponentRating() - 5) * 6;
         userMapper.setRankScore(opponentUser.getId(),newRankScore);
+
+        // 更新场馆评分
+        Venue venue = venueMapper.findById(successfulMatch.getVenueId());
+        if (venue != null) {
+            List<MatchComment> comments = commentMapper.getCommentsByMatchId(successfulMatch.getId());
+            double totalRating = 0;
+            for (MatchComment c : comments) {
+                totalRating += c.getVenueRating();
+            }
+            double newRating = totalRating / comments.size();
+            venue.setRating(newRating);
+            venueMapper.update(venue);
+        }
     }
 
     @Override

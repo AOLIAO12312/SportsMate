@@ -13,14 +13,14 @@ public interface VenueMapper {
     @Select("select * from venues where name=#{name}")
     Venue findByName(String name);
 
-    @Insert("INSERT INTO venues (name, country, state, city, district, street, postal_code, full_address, opening_time, closing_time, notes, phone, created_at, updated_at) " +
-            "VALUES (#{name}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{fullAddress}, #{openingTime}, #{closingTime}, #{notes}, #{phone}, NOW(), NOW())")
+    @Insert("INSERT INTO venues (name, country, state, city, district, street, postal_code, full_address, opening_time, closing_time, notes, phone, created_at, updated_at, rating) " +
+            "VALUES (#{name}, #{country}, #{state}, #{city}, #{district}, #{street}, #{postalCode}, #{fullAddress}, #{openingTime}, #{closingTime}, #{notes}, #{phone}, NOW(), NOW(), #{rating})")
     void add(Venue venue);
 
-    @Update("update venues set name=#{name},country=#{country},state=#{state},city=#{city},district=#{district},street=#{street},postal_code=#{postalCode},full_address=#{fullAddress},opening_time=#{openingTime},closing_time=#{closingTime},notes=#{notes},phone=#{phone},updated_at=#{updatedAt} where id=#{id}")
+    @Update("update venues set name=#{name},country=#{country},state=#{state},city=#{city},district=#{district},street=#{street},postal_code=#{postalCode},full_address=#{fullAddress},opening_time=#{openingTime},closing_time=#{closingTime},notes=#{notes},phone=#{phone},updated_at=#{updatedAt}, rating=#{rating} where id=#{id}")
     void update(Venue venue);
 
-    @Select("SELECT id,name, opening_time,closing_time,full_address FROM venues")
+    @Select("SELECT id,name, opening_time,closing_time,full_address, rating FROM venues")
     List<VenueDTO> listSimple();
 
     @Insert("insert into venue_sports (venue_id,sport_id,remain_spots) values (#{venueId},#{sportId},#{remainSpots})")

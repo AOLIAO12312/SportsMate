@@ -63,4 +63,6 @@ public class Venue {
 
     @OneToMany(mappedBy = "venue")
     private List<VenueSportDTO> venueSportDTOSet;  // 场馆对应的运动类型
+
+    private Double rating; // 新增评分字段
 }
