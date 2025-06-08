@@ -20,8 +20,15 @@ public class CoachReservation {
 
     @NotNull
     private Integer userId;  // 发起预约的用户ID（外键，关联到用户表的id）
+
+    private String username;
+
     @NotNull
     private Integer coachId;  // 预约的教练ID（外键，关联到用户表的id）
+
+    private String coachName;
+
+    private String coachedSport;
 
     private LocalDateTime startTime;  // 预约起始时间
 

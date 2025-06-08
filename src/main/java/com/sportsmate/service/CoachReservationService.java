@@ -5,7 +5,6 @@ import com.sportsmate.pojo.AvailableTime;
 import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.PageBean;
 
-import java.util.List;
 
 public interface CoachReservationService {
     void requestReservation(Integer loginUserId, AvailableTime availableTime,Integer venueId);

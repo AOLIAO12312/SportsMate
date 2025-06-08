@@ -8,6 +8,7 @@ import com.sportsmate.pojo.UserType;
 import com.sportsmate.pojo.UserStatus;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -49,6 +50,9 @@ public interface ReportMapper {
 
     @Select("SELECT * FROM reports WHERE reporter_id = (SELECT id FROM users WHERE username = #{reportername}) AND reported_id = (SELECT id FROM users WHERE username = #{reportedname}) AND status = #{status}")
     List<Report> getReportsByReporternameReportednameAndStatus(String reportername, String reportedname, HandleStatus status);
+
+    @Select("SELECT COUNT(*) FROM reports WHERE DATE(created_at) = #{date}")
+    int getReportCountByDate(LocalDate date);
 }
 
 

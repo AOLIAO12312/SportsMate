@@ -6,11 +6,14 @@ import com.sportsmate.converter.CoachCommentConverter;
 import com.sportsmate.dto.CoachCommentDTO;
 import com.sportsmate.dto.SuccessfulMatchDTO;
 import com.sportsmate.dto.VenueDTO;
+import com.sportsmate.mapper.CoachProfileMapper;
 import com.sportsmate.mapper.CoachReservationMapper;
 import com.sportsmate.mapper.ReservationCommentMapper;
+import com.sportsmate.mapper.SportMapper;
 import com.sportsmate.pojo.*;
 import com.sportsmate.service.CoachReservationService;
 import com.sportsmate.service.ReservationCommentService;
+import com.sportsmate.service.UserService;
 import com.sportsmate.service.VenueService;
 import com.sportsmate.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,15 @@ public class CoachReservationServiceImpl implements CoachReservationService {
     @Autowired
     private VenueService venueService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CoachProfileMapper coachProfileMapper;
+
+    @Autowired
+    private SportMapper sportMapper;
+
     @Override
     public void requestReservation(Integer loginUserId, AvailableTime availableTime,Integer venueId) {
         LocalDateTime targetStartDateTime = getNextDateTime(availableTime.getWeekday(), availableTime.getStartTime());
@@ -54,7 +66,7 @@ public class CoachReservationServiceImpl implements CoachReservationService {
         }
         Integer coachUserId = availableTime.getCoachId();
 
-        CoachReservation existingCoachReservation =  coachReservationMapper.findByCoachIdAndDateTime(coachUserId,targetStartDateTime);
+        CoachReservation existingCoachReservation =  coachReservationMapper.findByCoachIdAndDateTime(coachUserId,targetStartDateTime,ReservationStatus.已取消.toString());
         if(existingCoachReservation != null){
             //抛出错误
             throw new RuntimeException("该时间段已被预约，请选择其他时间");
@@ -101,6 +113,13 @@ public class CoachReservationServiceImpl implements CoachReservationService {
             dto.setFullAddress(venue.getFullAddress());
             dto.setId(venueId);
             coachReservation.setVenueDTO(dto);
+
+            User user = userService.findByUserId(coachReservation.getUserId());
+            CoachProfile coachProfile = coachProfileMapper.findByUserId(coachReservation.getCoachId());
+            coachReservation.setCoachName(coachProfile.getRealName());
+            coachReservation.setUsername(user.getUsername());
+
+            coachReservation.setCoachedSport(sportMapper.findBySportId(coachProfile.getCoachedSports()).getSportName() );
         }
 
         pb.setTotal(pageInfo.getTotal());
@@ -141,6 +160,13 @@ public class CoachReservationServiceImpl implements CoachReservationService {
             dto.setFullAddress(venue.getFullAddress());
             dto.setId(venueId);
             coachReservation.setVenueDTO(dto);
+
+            User user = userService.findByUserId(coachReservation.getUserId());
+            CoachProfile coachProfile = coachProfileMapper.findByUserId(coachReservation.getCoachId());
+            coachReservation.setCoachName(coachProfile.getRealName());
+            coachReservation.setUsername(user.getUsername());
+
+            coachReservation.setCoachedSport(sportMapper.findBySportId(coachProfile.getCoachedSports()).getSportName() );
         }
 
         pb.setTotal(pageInfo.getTotal());

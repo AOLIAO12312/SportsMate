@@ -17,8 +17,10 @@ import com.sportsmate.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -345,5 +347,24 @@ public class AdminController {
             logger.error("警告用户失败", e);
             return Result.error("警告用户失败");
         }
+    }
+
+    // 获取某一天的拦截次数（默认为今天）
+    @GetMapping("/forbiddenCount")
+    public Result<Integer> getForbiddenCount(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        int count = adminService.getCountByDate(date);
+        return Result.success(count);
+    }
+
+    @GetMapping("/reportCount")
+    public Result getReportCount(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        int count = adminService.getReportCountByDate(date);
+        return Result.success(count);
     }
 }

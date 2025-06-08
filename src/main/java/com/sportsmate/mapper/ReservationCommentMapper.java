@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -52,4 +53,12 @@ public interface ReservationCommentMapper {
 
     @Select("select * from coach_comment where coach_id = #{coachId}")
     List<ReservationComment> findCommentByCoachId(Integer coachId);
+
+    @Insert("INSERT INTO forbidden_word_daily (stat_date, count)\n" +
+            "VALUES (CURDATE(), 1)\n" +
+            "ON DUPLICATE KEY UPDATE count = count + 1;\n")
+    void updateForbiddenCount();
+
+    @Select("select count from forbidden_word_daily where stat_date=#{date}")
+    int getForbiddenCount(LocalDate date);
 }

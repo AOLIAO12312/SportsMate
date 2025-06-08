@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +62,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private CoachProfileConverter coachProfileConverter;
+
 
     @Override
     public List<Report> getReports() {
@@ -417,5 +420,15 @@ public class AdminServiceImpl implements AdminService {
             logger.error("警告用户失败，userId: {}", userId, e);
             throw new RuntimeException("警告用户失败", e);
         }
+    }
+
+    @Override
+    public int getCountByDate(LocalDate date) {
+        return reservationCommentMapper.getForbiddenCount(date);
+    }
+
+    @Override
+    public int getReportCountByDate(LocalDate date) {
+        return reportMapper.getReportCountByDate(date);
     }
 }

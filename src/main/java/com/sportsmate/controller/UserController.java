@@ -256,7 +256,7 @@ public class UserController {
 
 
     @GetMapping("/getAddress")
-    public Result getAddress() {
+    public Result getAddress(){
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer userId = (Integer) claims.get("id");
         List<UserAddress> userAddresses = userService.getAddress(userId);
@@ -303,27 +303,25 @@ public class UserController {
                 return Result.error("未找到对应的比赛记录");
             }
         }
-            // 检查是否已经存在举报记录
-            Report existingReport = reportMapper.getReportByReporterAndCommentOrMatch(reporterId, commentId, matchId);
-            if (existingReport != null) {
-                // 更新现有的举报记录
-                existingReport.setReason(reason);
-                existingReport.setStatus(HandleStatus.未处理);
-                reportMapper.updateReport(existingReport);
-                return Result.success("举报记录已更新");
-            }
-
-            // 创建新的举报记录
-            Report report = new Report();
-            report.setReporterId(reporterId);
-            report.setReason(reason);
-            report.setCommentId(commentId);
-            report.setMatchId(matchId);
-            report.setReportedId(reportedId);
-            userService.addReport(report);
-            return Result.success();
+        // 检查是否已经存在举报记录
+        Report existingReport = reportMapper.getReportByReporterAndCommentOrMatch(reporterId, commentId, matchId);
+        if (existingReport != null) {
+            // 更新现有的举报记录
+            existingReport.setReason(reason);
+            existingReport.setStatus(HandleStatus.未处理);
+            reportMapper.updateReport(existingReport);
+            return Result.success("举报记录已更新");
         }
 
+        Report report = new Report();
+        report.setReporterId(reporterId);
+        report.setReason(reason);
+        report.setCommentId(commentId);
+        report.setMatchId(matchId);
+        report.setReportedId(reportedId);
+        userService.addReport(report);
+        return Result.success();
+    }
 
     @PostMapping("/addAppeal")
     public Result addAppeal(@RequestBody Map<String, String> params) {

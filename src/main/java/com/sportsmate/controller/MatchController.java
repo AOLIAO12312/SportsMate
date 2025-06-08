@@ -39,7 +39,7 @@ public class MatchController {
         List<SuccessfulMatch> existingMatches = matchService.findActiveMatchByUserId(loginUserId);
 
         for(SuccessfulMatch existingMatch : existingMatches){
-            if(commentService.findByMatchAndUserId(existingMatch.getId(),loginUserId) == null){
+            if(commentService.findByMatchAndUserId(loginUserId,existingMatch.getId()) == null){
                 return Result.error("当前存在未完成(未评价)的比赛");
             }
         }

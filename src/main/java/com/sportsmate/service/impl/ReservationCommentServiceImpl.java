@@ -28,6 +28,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
     @Override
     public void addCoachComment(ReservationComment coachComment) {
         if (SensitiveWordUtil.containsForbiddenKeyword(coachComment.getCoachComment())) {
+            coachCommentMapper.updateForbiddenCount();
             throw new IllegalArgumentException("有违禁词，请重新输入");
         }
         Map<String,Object> claims = ThreadLocalUtil.get();

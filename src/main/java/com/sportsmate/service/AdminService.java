@@ -2,6 +2,7 @@ package com.sportsmate.service;
 
 import com.sportsmate.pojo.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminService {
@@ -61,4 +62,8 @@ public interface AdminService {
     PageBean<Appeal> getAllAppeals(Integer pageNum, Integer pageSize);
     // 警告用户
     void warnUser(Integer userId);
+
+    int getCountByDate(LocalDate date);
+
+    int getReportCountByDate(LocalDate date);
 }
