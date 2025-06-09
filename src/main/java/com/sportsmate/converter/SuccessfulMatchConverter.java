@@ -38,16 +38,20 @@ public class SuccessfulMatchConverter {
         Integer opponentId;
         Integer opponentRequestId;
 
+        Integer myRequestId;
         if(Objects.equals(successfulMatch.getUserId1(), loginUserId)){
             opponentId = successfulMatch.getUserId2();
             opponentRequestId = successfulMatch.getMatchRequestId2();
+            myRequestId = successfulMatch.getMatchRequestId1();
         }else {
             opponentId = successfulMatch.getUserId1();
             opponentRequestId = successfulMatch.getMatchRequestId1();
+            myRequestId = successfulMatch.getMatchRequestId2();
         }
 
         User opponent = userMapper.findByUserId(opponentId);
         MatchRequest matchRequest = matchRequestMapper.findById(opponentRequestId);
+        MatchRequest myMatchRequest = matchRequestMapper.findById(myRequestId);
 
         dto.setOpponentName(opponent.getUsername());
         dto.setOpponentGender(opponent.getGender());
@@ -57,7 +61,7 @@ public class SuccessfulMatchConverter {
         dto.setStartTime(successfulMatch.getStartTime());
         dto.setEndTime(successfulMatch.getEndTime());
         dto.setCreatedAt(successfulMatch.getCreatedAt());
-        dto.setOpponentRemark(matchRequest.getRemark());
+        dto.setRemark(myMatchRequest.getRemark());
 
         Venue venue =  venueService.findById(successfulMatch.getVenueId());
         if(venue != null){

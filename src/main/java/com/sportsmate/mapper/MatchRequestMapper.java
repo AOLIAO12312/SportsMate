@@ -51,7 +51,6 @@ public interface MatchRequestMapper {
             "<if test='status != null'>" +
             "AND status = #{status}" +
             "</if>" +
-            "AND NOT (status = '已取消' AND EXISTS (SELECT 1 FROM successful_matches WHERE (match_request_id1 = match_requests.id OR match_request_id2 = match_requests.id)))" +
             "ORDER BY created_at DESC" +
             "</script>")
     List<MatchRequest> listByUserIdAndStatus(@Param("userId") Integer userId, @Param("status") MatchRequestStatus status);

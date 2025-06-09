@@ -107,7 +107,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void cancel(Integer requestId, String remark) {
-        matchRequestMapper.cancel(requestId,remark);
+        matchRequestMapper.cancel(requestId,"自己原因："+remark);
 
 
 
@@ -115,9 +115,9 @@ public class MatchServiceImpl implements MatchService {
         if(successfulMatch != null){
             successfulMatchMapper.cancel(successfulMatch.getId());
             if(Objects.equals(requestId,successfulMatch.getMatchRequestId1())){
-                matchRequestMapper.cancel(successfulMatch.getMatchRequestId2(),"对方原因:"+remark);
+                matchRequestMapper.cancel(successfulMatch.getMatchRequestId2(),"对方原因："+remark);
             }else {
-                matchRequestMapper.cancel(successfulMatch.getMatchRequestId1(),"对方原因:"+remark);
+                matchRequestMapper.cancel(successfulMatch.getMatchRequestId1(),"对方原因："+remark);
             }
             //减少本人的信誉积分
             Map<String,Integer> claims = ThreadLocalUtil.get();
