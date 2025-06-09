@@ -28,4 +28,6 @@ public interface ReservationCommentService {
 
     // 获取用户发布的所有预约评论
     List<ReservationComment> getCommentsByUserId(Integer userId);
+
+    ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId);
 }

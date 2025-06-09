@@ -16,15 +16,15 @@ import java.util.List;
 @Mapper
 public interface ReservationCommentMapper {
 
-    @Insert("insert into coach_comment(user_id, coach_id, coach_reservation_id, coach_rating, coach_comment, created_at)"+
-            "values(#{userId}, #{coachId}, #{coachReservationId}, #{coachRating}, #{coachComment}, #{createdAt})")
+    @Insert("insert into coach_comment(user_id, coach_id, coach_reservation_id, coach_rating, coach_comment, venue_rating,created_at)"+
+            "values(#{userId}, #{coachId}, #{coachReservationId}, #{coachRating}, #{coachComment}, #{venueRating} ,#{createdAt})")
     void addCoachComment(ReservationComment coachComment);
 
     @Delete("delete from coach_comment where id = #{id}")
     void deleteCoachComment(Integer id);
 
     @Update("update coach_comment set user_id = #{userId}, coach_id = #{coachId}, coach_reservation_id = #{coachReservationId}, " +
-            "coach_rating = #{coachRating}, coach_comment = #{coachComment}, created_at = #{createdAt} where id = #{id}")
+            "coach_rating = #{coachRating}, coach_comment = #{coachComment}, created_at = #{createdAt},venue_rating = #{venueRating} where id = #{id}")
     void updateCoachComment(ReservationComment coachComment);
 
     @Select("select * from coach_comment where id = #{id}")
@@ -61,4 +61,10 @@ public interface ReservationCommentMapper {
 
     @Select("select count from forbidden_word_daily where stat_date=#{date}")
     int getForbiddenCount(LocalDate date);
+
+    @Select("SELECT * FROM coach_comment WHERE coach_reservation_id IN (SELECT id FROM coach_reservation WHERE venue_id = #{venueId})")
+    List<ReservationComment> getCommentsByVenueId(Integer venueId);
+
+    @Select("SELECT * FROM coach_comment WHERE user_id = #{userId} AND coach_reservation_id = #{reservationId}")
+    ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId);
 }

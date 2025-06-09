@@ -41,10 +41,25 @@ public class MatchCommentController {
     }
 
     @GetMapping("/get")
-    public Result get() {
+    public Result get(@RequestParam(required = false) Integer matchId) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        List<MatchComment> comments = commentService.getCommentsByUserId(loginUserId);
+        List<MatchComment> comments;
+
+        if (matchId != null) {
+            // 当传入matchId时，筛选该token用户在某一个比赛的评论
+            MatchComment comment = commentService.findByMatchAndUserId(loginUserId, matchId);
+            if (comment != null) {
+                comments = List.of(comment);
+            } else {
+                comments = List.of();
+                return Result.error("没有对应的数据");
+            }
+        } else {
+            // 没有matchId的话，就和原来一样
+            comments = commentService.getCommentsByUserId(loginUserId);
+        }
+
         return Result.success(comments);
     }
 }

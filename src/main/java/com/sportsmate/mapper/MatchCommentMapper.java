@@ -95,4 +95,7 @@ public interface MatchCommentMapper {
     @Select("SELECT * FROM comment")
     List<MatchComment> getAllComments();
 
+    @Select("SELECT * FROM comment WHERE match_id IN (SELECT id FROM successful_matches WHERE venue_id = #{venueId})")
+    List<MatchComment> getCommentsByVenueId(Integer venueId);
+
 }

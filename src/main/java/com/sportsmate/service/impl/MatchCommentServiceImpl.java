@@ -1,14 +1,7 @@
 package com.sportsmate.service.impl;
 
-import com.sportsmate.mapper.MatchCommentMapper;
-import com.sportsmate.mapper.SuccessfulMatchMapper;
-import com.sportsmate.mapper.UserMapper;
-import com.sportsmate.mapper.VenueMapper;
-import com.sportsmate.pojo.MatchComment;
-import com.sportsmate.pojo.SuccessfulMatch;
-import com.sportsmate.pojo.SuccessfulMatchStatus;
-import com.sportsmate.pojo.User;
-import com.sportsmate.pojo.Venue;
+import com.sportsmate.mapper.*;
+import com.sportsmate.pojo.*;
 import com.sportsmate.service.MatchCommentService;
 import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -28,6 +21,11 @@ public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Autowired
     SuccessfulMatchMapper successfulMatchMapper;
+
+    @Autowired
+    ReservationCommentMapper coachCommentMapper;
+
+
 
     @Autowired
     UserMapper userMapper;
@@ -59,19 +57,9 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         Integer newRankScore = opponentUser.getRankScore();
         newRankScore += (comment.getOpponentRating() - 5) * 6;
         userMapper.setRankScore(opponentUser.getId(),newRankScore);
-
+        Integer venueId = successfulMatch.getVenueId();
         // 更新场馆评分
-        Venue venue = venueMapper.findById(successfulMatch.getVenueId());
-        if (venue != null) {
-            List<MatchComment> comments = commentMapper.getCommentsByMatchId(successfulMatch.getId());
-            double totalRating = 0;
-            for (MatchComment c : comments) {
-                totalRating += c.getVenueRating();
-            }
-            double newRating = totalRating / comments.size();
-            venue.setRating(newRating);
-            venueMapper.update(venue);
-        }
+        updateVenueRating(venueId);
     }
 
     @Override
@@ -87,6 +75,8 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         }
         // 这里可以添加权限判断逻辑，确保只能删除自己的评论
         commentMapper.deleteComment(id);
+        Integer venueId = successfulMatch.getVenueId();
+        updateVenueRating(venueId);
     }
 
     @Override
@@ -100,6 +90,8 @@ public class MatchCommentServiceImpl implements MatchCommentService {
             throw new IllegalArgumentException("你没有权限对该比赛进行更新");
         }
         commentMapper.updateComment(comment);
+        Integer venueId = successfulMatch.getVenueId();
+        updateVenueRating(venueId);
     }
 
     @Override
@@ -136,5 +128,41 @@ public class MatchCommentServiceImpl implements MatchCommentService {
     @Override
     public List<MatchComment> getCommentsByUserId(Integer userId) {
         return commentMapper.getCommentsByUserId(userId);
+    }
+
+    private void updateVenueRating(Integer venueId) {
+        // 获取该场馆的所有 Reservation 评论
+        List<ReservationComment> reservationComments = coachCommentMapper.getCommentsByVenueId(venueId);
+
+        // 获取该场馆的所有 Match 评论
+        List<MatchComment> matchComments = commentMapper.getCommentsByVenueId(venueId);
+
+        // 计算总评分和评论数量
+        int totalRatings = 0;
+        int commentCount = 0;
+
+        // 累加 Reservation 评论的评分
+        for (ReservationComment comment : reservationComments) {
+            totalRatings += comment.getVenueRating();
+            commentCount++;
+        }
+
+        // 累加 Match 评论的评分
+        for (MatchComment comment : matchComments) {
+            totalRatings += comment.getVenueRating();
+            commentCount++;
+        }
+
+        // 计算平均评分
+        if (commentCount > 0) {
+            double averageRating = (double) totalRatings / commentCount;
+
+            // 更新场馆评分
+            Venue venue = venueMapper.findById(venueId);
+            if (venue != null) {
+                venue.setRating(averageRating);
+                venueMapper.update(venue);
+            }
+        }
     }
 }
