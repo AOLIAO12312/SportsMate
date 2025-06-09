@@ -215,13 +215,16 @@ public class AdminController {
                                            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                                            @RequestParam(required = false) String username1,
                                            @RequestParam(required = false) String username2,
-                                           @RequestParam(required = false) Integer matchId) {
+                                           @RequestParam(required = false) Integer matchId,
+                                           @RequestParam(required = false) Integer commentId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
             PageBean<MatchComment> pb;
-            if (username1 != null && username2 == null && matchId == null) {
+            if (commentId != null) {
+                pb = adminService.getMatchCommentsById(pageNum, pageSize, commentId);
+            } else if (username1 != null && username2 == null && matchId == null) {
                 // 通过 username1 查询某个用户发起的所有评论
                 pb = adminService.getMatchCommentsByUsername1(pageNum, pageSize, username1);
             } else if (username1 == null && username2 == null && matchId != null) {
@@ -241,18 +244,23 @@ public class AdminController {
         }
     }
 
+
     @GetMapping("/getFilteredReservationComments")
     public Result getFilteredReservationComments(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                                  @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                                                  @RequestParam(required = false) String username,
-                                                 @RequestParam(required = false) String coachName) {
+                                                 @RequestParam(required = false) String coachName,
+                                                 @RequestParam(required = false) Integer commentId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
             PageBean<ReservationComment> pb;
-            if (username != null && coachName == null) {
-                // 通过 username 查询该用户发起的评论
+            if (commentId != null) {
+                pb = adminService.getReservationCommentsById(pageNum, pageSize, commentId);
+            } else if (username != null && coachName == null) {
+                // 通过 username 查询某个用户发起的所有预约评论
+                pb = adminService.getReservationCommentsByUsername(pageNum, pageSize, username);
                 pb = adminService.getReservationCommentsByUsername(pageNum, pageSize, username);
             } else if (username == null && coachName != null) {
                 // 通过 coachname 查询该教练接受的评论

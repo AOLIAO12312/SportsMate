@@ -411,6 +411,27 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public PageBean<MatchComment> getMatchCommentsById(Integer pageNum, Integer pageSize, Integer commentId) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MatchComment> comments = matchCommentMapper.getCommentById(commentId) != null ? List.of(matchCommentMapper.getCommentById(commentId)) : List.of();
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
+    }
+
+    @Override
+    public PageBean<ReservationComment> getReservationCommentsById(Integer pageNum, Integer pageSize, Integer commentId) {
+        PageBean<ReservationComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ReservationComment> comments = reservationCommentMapper.getCoachCommentById(commentId) != null ? List.of(reservationCommentMapper.getCoachCommentById(commentId)) : List.of();
+        PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
+    }
+    @Override
     @Transactional
     public void warnUser(Integer userId) {
         try {

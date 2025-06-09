@@ -66,4 +66,10 @@ public interface AdminService {
     int getCountByDate(LocalDate date);
 
     int getReportCountByDate(LocalDate date);
+
+    // 按照评论ID筛选比赛评论
+    PageBean<MatchComment> getMatchCommentsById(Integer pageNum, Integer pageSize, Integer commentId);
+
+    // 按照评论ID筛选预约评论
+    PageBean<ReservationComment> getReservationCommentsById(Integer pageNum, Integer pageSize, Integer commentId);
 }
