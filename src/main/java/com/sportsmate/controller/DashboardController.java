@@ -12,48 +12,80 @@ import java.util.*;
 @RequestMapping("/dashboard")
 public class DashboardController {
 
+    private static final Map<String, Integer> STATIC_DAU_MAP = new LinkedHashMap<>();
+    private static final Map<String, Object> STATIC_MAU;
+
+    static {
+        // 初始化 2025-06-01 到 2025-07-01 的每日活跃数据（模拟固定值）
+        LocalDate start = LocalDate.of(2025, 6, 1);
+        LocalDate end = LocalDate.of(2025, 7, 1);
+        Random random = new Random(42); // 固定种子，保证每次启动结果一样
+
+        LocalDate current = start;
+        while (!current.isAfter(end)) {
+            STATIC_DAU_MAP.put(current.toString(), random.nextInt(300) + 100); // 100 ~ 399
+            current = current.plusDays(1);
+        }
+
+        // 模拟6月月活（例如以所有DAU用户总数的估计）
+        STATIC_MAU = new HashMap<>();
+        STATIC_MAU.put("month", "JUNE");
+        STATIC_MAU.put("monthlyActiveUsers", 2450); // 可改为 sum 或唯一用户估计值
+    }
+
     /**
-     * 模拟返回当天日活跃用户数量
+     * 返回当天（2025-06-09）活跃数据（固定）
      */
     @GetMapping("/dau")
     public Result getDailyActiveUsers() {
+        String today = LocalDate.now().toString(); // 固定返回该日
         Map<String, Object> response = new HashMap<>();
-        response.put("date", LocalDate.now().toString());
-        response.put("dailyActiveUsers", new Random().nextInt(300) + 100); // 模拟100~399之间的DAU
+        response.put("date", today);
+        response.put("dailyActiveUsers", STATIC_DAU_MAP.get(today));
         return Result.success(response);
     }
 
     /**
-     * 模拟返回本月月活跃用户数量
+     * 返回六月的月活数据（固定）
      */
     @GetMapping("/mau")
     public Result getMonthlyActiveUsers() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("month", LocalDate.now().getMonth().toString());
-        response.put("monthlyActiveUsers", new Random().nextInt(2000) + 1000); // 模拟1000~2999之间的MAU
-        return Result.success(response);
+        return Result.success(STATIC_MAU);
     }
 
     /**
-     * 模拟返回最近7天的活跃用户趋势数据（折线图用）
+     * 返回最近7天的趋势（从静态DAU中截取）
      */
     @GetMapping("/weekly-trend")
     public Result getWeeklyTrend() {
         List<Map<String, Object>> trend = new ArrayList<>();
-        LocalDate today = LocalDate.now();
-        Random random = new Random();
 
+        LocalDate end = LocalDate.now();
         for (int i = 6; i >= 0; i--) {
-            Map<String, Object> dayData = new HashMap<>();
-            LocalDate date = today.minusDays(i);
-            dayData.put("date", date.toString());
-            dayData.put("activeUsers", random.nextInt(300) + 100); // 100~399
-            trend.add(dayData);
+            LocalDate date = end.minusDays(i);
+            Map<String, Object> day = new HashMap<>();
+            day.put("date", date.toString());
+            day.put("activeUsers", STATIC_DAU_MAP.get(date.toString()));
+            trend.add(day);
         }
 
         return Result.success(trend);
     }
 
+    /**
+     * （可选）返回整个月的DAU数据
+     */
+    @GetMapping("/dau/month")
+    public Result getMonthlyDailyActiveUsers() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : STATIC_DAU_MAP.entrySet()) {
+            Map<String, Object> day = new HashMap<>();
+            day.put("date", entry.getKey());
+            day.put("dailyActiveUsers", entry.getValue());
+            list.add(day);
+        }
+        return Result.success(list);
+    }
     /**
      * 模拟返回地域热力图数据
      */

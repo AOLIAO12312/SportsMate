@@ -19,6 +19,8 @@ public class ReservationComment {
     @NotNull
     private Integer coachId;  // 教练ID（外键）
 
+    private String coachName;
+
     @NotNull
     private Integer coachReservationId; // 指向coach_reservation_id
 
@@ -31,6 +33,8 @@ public class ReservationComment {
     @Min(0)
     @Max(10)
     private Integer venueRating;  // 场馆评分（0-10）
+
+    private String venueName;
 
     private String coachComment;  // 对教练的文字评价
 

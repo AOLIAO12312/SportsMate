@@ -101,7 +101,20 @@ public class MatchCommentServiceImpl implements MatchCommentService {
 
     @Override
     public MatchComment findByMatchAndUserId(Integer userId, Integer matchId) {
-        return commentMapper.findByMatchAndUserId(userId, matchId);
+        MatchComment matchComment = commentMapper.findByMatchAndUserId(userId, matchId);
+
+        // 添加对手用户名和场馆名字
+        SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+        User opponent;
+        if(userId.equals(successfulMatch.getUserId1())){
+            opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+        }else {
+            opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+        }
+        matchComment.setOpponentName(opponent.getUsername());
+        matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+
+        return matchComment;
     }
 
     @Override
@@ -127,7 +140,20 @@ public class MatchCommentServiceImpl implements MatchCommentService {
     }
     @Override
     public List<MatchComment> getCommentsByUserId(Integer userId) {
-        return commentMapper.getCommentsByUserId(userId);
+        List<MatchComment> matchComments = commentMapper.getCommentsByUserId(userId);
+        for(MatchComment matchComment:matchComments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
+        return matchComments;
     }
 
     private void updateVenueRating(Integer venueId) {
