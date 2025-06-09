@@ -414,8 +414,26 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public void warnUser(Integer userId) {
         try {
-            userMapper.updateUserStatus(userId, UserStatus.警告);
-            logger.info("用户 userId: {} 已被警告", userId);
+            // 查询用户信息
+            User user = userMapper.findByUserId(userId);
+            if (user != null) {
+                // 扣除信誉分
+                int newReputationScore = user.getReputationScore() - 5;
+                // 最低不低于0分
+                newReputationScore = Math.max(newReputationScore, 0);
+                user.setReputationScore(newReputationScore);
+                userMapper.updateReputationScore(user.getId(), newReputationScore);
+
+                // 判断信誉等级
+                if (newReputationScore < 80) {
+                    // 封禁用户
+                    userMapper.updateStatus(user.getId(), UserStatus.封禁);
+                    // 你可以记录封禁日志或发送通知
+                } else if (newReputationScore < 90) {
+                    userMapper.updateStatus(user.getId(), UserStatus.警告);
+                }
+            }
+            logger.info("用户 userId: {} 已被警告，信誉分已扣除", userId);
         } catch (Exception e) {
             logger.error("警告用户失败，userId: {}", userId, e);
             throw new RuntimeException("警告用户失败", e);
