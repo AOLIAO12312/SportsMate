@@ -2,10 +2,14 @@ package com.sportsmate.service.impl;
 
 import com.sportsmate.mapper.ReservationCommentMapper;
 import com.sportsmate.mapper.CoachReservationMapper;
+import com.sportsmate.mapper.VenueMapper;
+import com.sportsmate.mapper.MatchCommentMapper;
+import com.sportsmate.pojo.Venue;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationStatus;
 import com.sportsmate.pojo.SuccessfulMatch;
+import com.sportsmate.pojo.MatchComment;
 import com.sportsmate.service.ReservationCommentService;
 import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -24,6 +28,12 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Autowired
     CoachReservationMapper coachReservationMapper;
+
+    @Autowired
+    VenueMapper venueMapper;
+
+    @Autowired
+    MatchCommentMapper matchCommentMapper;
 
     @Override
     public void addCoachComment(ReservationComment coachComment) {
@@ -58,6 +68,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         }
         coachCommentMapper.addCoachComment(coachComment);
         handleCommentAndUpdateReservationStatus(coachComment);
+        updateVenueRating(coachReservation.getVenueId());
     }
 
 
@@ -74,6 +85,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
             throw new IllegalArgumentException("你没有权限对该预约进行删除");
         }
         coachCommentMapper.deleteCoachComment(id);
+        updateVenueRating(coachReservation1.getVenueId());
     }
 
     @Override
@@ -90,6 +102,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
             throw new IllegalArgumentException("你没有权限对该预约进行更新");
         }
         coachCommentMapper.updateCoachComment(coachComment);
+        updateVenueRating(coachReservation1.getVenueId());
     }
 
     @Override
@@ -121,5 +134,46 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
     @Override
     public List<ReservationComment> getCommentsByUserId(Integer userId) {
         return coachCommentMapper.getCommentsByUserId(userId);
+    }
+
+    private void updateVenueRating(Integer venueId) {
+        // 获取该场馆的所有 Reservation 评论
+        List<ReservationComment> reservationComments = coachCommentMapper.getCommentsByVenueId(venueId);
+
+        // 获取该场馆的所有 Match 评论
+        List<MatchComment> matchComments = matchCommentMapper.getCommentsByVenueId(venueId);
+
+        // 计算总评分和评论数量
+        int totalRatings = 0;
+        int commentCount = 0;
+
+        // 累加 Reservation 评论的评分
+        for (ReservationComment comment : reservationComments) {
+            totalRatings += comment.getVenueRating();
+            commentCount++;
+        }
+
+        // 累加 Match 评论的评分
+        for (MatchComment comment : matchComments) {
+            totalRatings += comment.getVenueRating();
+            commentCount++;
+        }
+
+        // 计算平均评分
+        if (commentCount > 0) {
+            double averageRating = (double) totalRatings / commentCount;
+
+            // 更新场馆评分
+            Venue venue = venueMapper.findById(venueId);
+            if (venue != null) {
+                venue.setRating(averageRating);
+                venueMapper.update(venue);
+            }
+        }
+    }
+
+    @Override
+    public ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId) {
+        return coachCommentMapper.findByUserAndReservationId(userId, reservationId);
     }
 }

@@ -27,6 +27,11 @@ public class ReservationComment {
     @Max(10)
     private Integer coachRating;  // 教练评分（0-10）
 
+    @NotNull
+    @Min(0)
+    @Max(10)
+    private Integer venueRating;  // 场馆评分（0-10）
+
     private String coachComment;  // 对教练的文字评价
 
     @Column(name = "created_at", updatable = false)
