@@ -519,6 +519,12 @@ public class AdminServiceImpl implements AdminService {
         PageBean<ReservationComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<ReservationComment> comments = reservationCommentMapper.getCoachCommentById(commentId) != null ? List.of(reservationCommentMapper.getCoachCommentById(commentId)) : List.of();
+        for(ReservationComment reservationComment:comments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
         PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
