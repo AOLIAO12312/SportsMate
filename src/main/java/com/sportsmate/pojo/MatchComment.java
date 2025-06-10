@@ -16,6 +16,8 @@ public class MatchComment {
     @NotNull
     private Integer userId;  // 用户ID（外键）
 
+    private String opponentName;
+
     @NotNull
     private Integer matchId;
 
@@ -28,6 +30,8 @@ public class MatchComment {
     @Min(0)
     @Max(10)
     private Integer venueRating;  // 场馆评分（0-10）
+
+    private String venueName;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

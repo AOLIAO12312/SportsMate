@@ -2,28 +2,14 @@ package com.sportsmate.service.impl;
 
 import com.sportsmate.converter.CoachProfileConverter;
 import com.sportsmate.dto.CoachProfileDTO;
-import com.sportsmate.mapper.MatchCommentMapper;
-import com.sportsmate.mapper.UserMapper;
-import com.sportsmate.mapper.ReportMapper;
-import com.sportsmate.mapper.AppealMapper;
-import com.sportsmate.mapper.ReservationCommentMapper;
-import com.sportsmate.mapper.CoachProfileMapper;
-import com.sportsmate.mapper.SportMapper;
-import com.sportsmate.pojo.MatchComment;
-import com.sportsmate.pojo.Appeal;
-import com.sportsmate.pojo.HandleStatus;
-import com.sportsmate.pojo.Report;
-import com.sportsmate.pojo.User;
-import com.sportsmate.pojo.UserType;
-import com.sportsmate.pojo.UserStatus;
-import com.sportsmate.pojo.ReservationComment;
-import com.sportsmate.pojo.PageBean;
-import com.sportsmate.pojo.UserWithCoachInfo;
+import com.sportsmate.mapper.*;
+import com.sportsmate.pojo.*;
 import com.github.pagehelper.Page;
-import com.sportsmate.pojo.CoachProfile;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sportsmate.service.AdminService;
+import com.sportsmate.service.VenueService;
+import com.sportsmate.utils.ThreadLocalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +18,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+
 import org.springframework.transaction.annotation.Transactional;
+import org.xmlunit.util.Mapper;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -58,10 +47,19 @@ public class AdminServiceImpl implements AdminService {
     private ReservationCommentMapper reservationCommentMapper;
 
     @Autowired
+    private SuccessfulMatchMapper successfulMatchMapper;
+
+    @Autowired
     private CoachProfileMapper coachProfileMapper;
 
     @Autowired
     private CoachProfileConverter coachProfileConverter;
+
+    @Autowired
+    private VenueMapper venueMapper;
+
+    @Autowired
+    private CoachReservationMapper coachReservationMapper;
 
 
     @Override
@@ -192,9 +190,27 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public PageBean<MatchComment> getMatchCommentsByUsername1(Integer pageNum, Integer pageSize, String username1) {
+
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1(username1);
+
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+
+        for(MatchComment matchComment:comments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
+
         PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -206,6 +222,22 @@ public class AdminServiceImpl implements AdminService {
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<MatchComment> comments = matchCommentMapper.getCommentsByMatchId(match_id);
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+
+        for(MatchComment matchComment:comments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
+
         PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -217,6 +249,22 @@ public class AdminServiceImpl implements AdminService {
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1AndUsername2(username1, username2);
+
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+
+        for(MatchComment matchComment:comments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
         PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -228,6 +276,22 @@ public class AdminServiceImpl implements AdminService {
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<MatchComment> comments = matchCommentMapper.getAllComments();
+
+        Map<String, Object> claims = ThreadLocalUtil.get();
+        Integer userId = (Integer) claims.get("id");
+
+        for(MatchComment matchComment:comments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
         PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -239,6 +303,14 @@ public class AdminServiceImpl implements AdminService {
         PageBean<ReservationComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<ReservationComment> comments = reservationCommentMapper.getCommentsByUsername(username);
+
+        for(ReservationComment reservationComment:comments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
+
         PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -250,6 +322,13 @@ public class AdminServiceImpl implements AdminService {
         PageBean<ReservationComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<ReservationComment> comments = reservationCommentMapper.getCommentsByCoachname(coachname);
+        for(ReservationComment reservationComment:comments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
+
         PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -261,6 +340,13 @@ public class AdminServiceImpl implements AdminService {
         PageBean<ReservationComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<ReservationComment> comments = reservationCommentMapper.getCommentsByUsernameAndCoachname(username, coachname);
+
+        for(ReservationComment reservationComment:comments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
         PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);
@@ -272,6 +358,13 @@ public class AdminServiceImpl implements AdminService {
         PageBean<ReservationComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<ReservationComment> comments = reservationCommentMapper.getAllComments();
+
+        for(ReservationComment reservationComment:comments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
         PageInfo<ReservationComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);

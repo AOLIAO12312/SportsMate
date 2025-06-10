@@ -1,9 +1,6 @@
 package com.sportsmate.service.impl;
 
-import com.sportsmate.mapper.ReservationCommentMapper;
-import com.sportsmate.mapper.CoachReservationMapper;
-import com.sportsmate.mapper.VenueMapper;
-import com.sportsmate.mapper.MatchCommentMapper;
+import com.sportsmate.mapper.*;
 import com.sportsmate.pojo.Venue;
 import com.sportsmate.pojo.ReservationComment;
 import com.sportsmate.pojo.CoachReservation;
@@ -34,6 +31,9 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Autowired
     MatchCommentMapper matchCommentMapper;
+
+    @Autowired
+    CoachProfileMapper coachProfileMapper;
 
     @Override
     public void addCoachComment(ReservationComment coachComment) {
@@ -133,6 +133,14 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Override
     public List<ReservationComment> getCommentsByUserId(Integer userId) {
+        List<ReservationComment> reservationComments = coachCommentMapper.getCommentsByUserId(userId);
+
+        for(ReservationComment reservationComment:reservationComments){
+            // 添加场馆名字和教练名字
+            reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+            CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+            reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        }
         return coachCommentMapper.getCommentsByUserId(userId);
     }
 
@@ -174,6 +182,12 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
 
     @Override
     public ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId) {
-        return coachCommentMapper.findByUserAndReservationId(userId, reservationId);
+        ReservationComment reservationComment = coachCommentMapper.findByUserAndReservationId(userId, reservationId);
+
+        // 添加场馆名字和教练名字
+        reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
+        CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
+        reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
+        return reservationComment;
     }
 }
