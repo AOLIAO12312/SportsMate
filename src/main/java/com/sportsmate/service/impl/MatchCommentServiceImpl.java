@@ -115,6 +115,9 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         MatchComment matchComment = commentMapper.findByMatchAndUserId(userId, matchId);
 
         // 添加对手用户名和场馆名字
+        if(matchComment == null){
+            return null;
+        }
         SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
         User opponent;
         if(userId.equals(successfulMatch.getUserId1())){

@@ -216,11 +216,17 @@ public class AdminController {
                                            @RequestParam(required = false) String username1,
                                            @RequestParam(required = false) String username2,
                                            @RequestParam(required = false) Integer matchId,
+                                           @RequestParam(required = false) Integer userId,
                                            @RequestParam(required = false) Integer commentId) {
         try {
             if (!isAdmin()) {
                 return Result.error("没有管理员权限");
             }
+            if(userId!=null)
+               {
+                   User user1 = userService.findByUserId(userId);
+                   username1 = user1.getUsername();
+               }
             PageBean<MatchComment> pb;
             if (commentId != null) {
                 pb = adminService.getMatchCommentsById(pageNum, pageSize, commentId);

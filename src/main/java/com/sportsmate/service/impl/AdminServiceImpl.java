@@ -196,7 +196,8 @@ public class AdminServiceImpl implements AdminService {
         List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1(username1);
 
         Map<String, Object> claims = ThreadLocalUtil.get();
-        Integer userId = (Integer) claims.get("id");
+        User user1 = userMapper.findByUserName(username1);
+        Integer userId= user1.getId();
 
         for(MatchComment matchComment:comments){
             // 添加对手用户名和场馆名字
@@ -508,6 +509,8 @@ public class AdminServiceImpl implements AdminService {
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
         List<MatchComment> comments = matchCommentMapper.getCommentById(commentId) != null ? List.of(matchCommentMapper.getCommentById(commentId)) : List.of();
+
+
         PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
         pb.setTotal(pageInfo.getTotal());
         pb.setItems(comments);

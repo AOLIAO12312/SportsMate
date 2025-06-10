@@ -76,12 +76,14 @@ public interface MatchCommentMapper {
     })
     @Select("SELECT * FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1})")
     List<MatchComment> getCommentsByUsername1(String username1);
+
     @Results({
             @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
             @Result(property = "venueRating", column = "venue_rating")
     })
-    @Select("SELECT * FROM comment WHERE match_id = #{match_id} LIMIT 2")
+    @Select("SELECT * FROM comment WHERE match_id = #{match_id}")
     List<MatchComment> getCommentsByMatchId(Integer match_id);
+
     @Results({
             @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
             @Result(property = "venueRating", column = "venue_rating")

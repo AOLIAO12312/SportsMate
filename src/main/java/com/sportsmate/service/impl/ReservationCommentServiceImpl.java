@@ -188,6 +188,9 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
     public ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId) {
         ReservationComment reservationComment = coachCommentMapper.findByUserAndReservationId(userId, reservationId);
 
+        if(reservationComment == null){
+            return null;
+        }
         // 添加场馆名字和教练名字
         reservationComment.setCoachName(coachProfileMapper.findByUserId(reservationComment.getCoachId()).getRealName());
         CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
