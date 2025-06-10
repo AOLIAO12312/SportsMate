@@ -7,6 +7,7 @@ import com.sportsmate.pojo.CoachReservation;
 import com.sportsmate.pojo.ReservationStatus;
 import com.sportsmate.pojo.SuccessfulMatch;
 import com.sportsmate.pojo.MatchComment;
+import com.sportsmate.pojo.CoachProfile;
 import com.sportsmate.service.ReservationCommentService;
 import com.sportsmate.utils.SensitiveWordUtil;
 import com.sportsmate.utils.ThreadLocalUtil;
@@ -69,6 +70,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         coachCommentMapper.addCoachComment(coachComment);
         handleCommentAndUpdateReservationStatus(coachComment);
         updateVenueRating(coachReservation.getVenueId());
+        updateCoachRating(coachReservation.getCoachId());
     }
 
 
@@ -86,6 +88,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         }
         coachCommentMapper.deleteCoachComment(id);
         updateVenueRating(coachReservation1.getVenueId());
+        updateCoachRating(coachReservation1.getCoachId());
     }
 
     @Override
@@ -103,6 +106,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         }
         coachCommentMapper.updateCoachComment(coachComment);
         updateVenueRating(coachReservation1.getVenueId());
+        updateCoachRating(coachReservation1.getCoachId());
     }
 
     @Override
@@ -189,5 +193,31 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
         CoachReservation coachReservation = coachReservationMapper.findById(reservationComment.getCoachReservationId());
         reservationComment.setVenueName(venueMapper.findById(coachReservation.getVenueId()).getName());
         return reservationComment;
+    }
+
+    private void updateCoachRating(Integer coachId) {
+        // 获取该教练的所有评论
+        List<ReservationComment> comments = coachCommentMapper.getCommentsByCoachId(coachId);
+
+        // 计算总评分和评论数量
+        int totalRatings = 0;
+        int commentCount = 0;
+
+        // 累加评论的评分
+        for (ReservationComment comment : comments) {
+            totalRatings += comment.getCoachRating();
+            commentCount++;
+        }
+
+        // 计算平均评分
+        if (commentCount > 0) {
+            float averageRating = (float) totalRatings / commentCount;
+
+            CoachProfile coachProfile = coachProfileMapper.findByUserId(coachId);
+             if (coachProfile != null) {
+                 coachProfile.setRating(averageRating);
+                 coachProfileMapper.updateProfile(coachProfile);
+             }
+        }
     }
 }

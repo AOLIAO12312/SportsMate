@@ -90,7 +90,17 @@ public class MatchCommentServiceImpl implements MatchCommentService {
         if (successfulMatch == null || (!successfulMatch.getUserId1().equals(loginUserId) && !successfulMatch.getUserId2().equals(loginUserId))) {
             throw new IllegalArgumentException("你没有权限对该比赛进行更新");
         }
+        MatchComment oldComment = commentMapper.getCommentById(comment.getId());
+        if (oldComment == null) {
+            throw new IllegalArgumentException("未找到该评论信息");
+        }
+        int ratingChange = comment.getOpponentRating() - oldComment.getOpponentRating();
         commentMapper.updateComment(comment);
+
+        User opponentUser = userMapper.findByUserId(Objects.equals(successfulMatch.getUserId1(), loginUserId) ? successfulMatch.getUserId2() : successfulMatch.getUserId1());
+        Integer newRankScore = opponentUser.getRankScore();
+        newRankScore += ratingChange * 6;
+        userMapper.setRankScore(opponentUser.getId(), newRankScore);
         Integer venueId = successfulMatch.getVenueId();
         updateVenueRating(venueId);
     }

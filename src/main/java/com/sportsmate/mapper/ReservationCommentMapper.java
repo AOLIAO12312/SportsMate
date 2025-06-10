@@ -67,4 +67,7 @@ public interface ReservationCommentMapper {
 
     @Select("SELECT * FROM coach_comment WHERE user_id = #{userId} AND coach_reservation_id = #{reservationId}")
     ReservationComment findByUserAndReservationId(Integer userId, Integer reservationId);
+
+    @Select("SELECT * FROM coach_comment WHERE coach_id = #{coachId}")
+    List<ReservationComment> getCommentsByCoachId(Integer coachId);
 }
