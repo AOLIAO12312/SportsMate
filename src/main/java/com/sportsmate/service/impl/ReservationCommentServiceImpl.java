@@ -76,7 +76,7 @@ public class ReservationCommentServiceImpl implements ReservationCommentService 
     public void deleteCoachComment(Integer id) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        ReservationComment coachComment = new ReservationComment();
+        ReservationComment coachComment = getCoachCommentById(id);
         coachComment.setId(id);
         coachComment.setUserId(loginUserId);
         // 这里可以添加权限判断逻辑，确保只能删除自己的评论

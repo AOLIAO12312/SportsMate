@@ -66,10 +66,11 @@ public class MatchCommentServiceImpl implements MatchCommentService {
     public void deleteComment(Integer id) {
         Map<String, Object> claims = ThreadLocalUtil.get();
         Integer loginUserId = (Integer) claims.get("id");
-        MatchComment comment = new MatchComment();
-        comment.setId(id);
-        comment.setUserId(loginUserId);
+        MatchComment comment = getCommentById(id);
         SuccessfulMatch successfulMatch = successfulMatchMapper.findById(comment.getMatchId());
+        if(successfulMatch == null) {
+            throw new IllegalArgumentException("没找到该比赛");
+        }
         if (successfulMatch == null || (!successfulMatch.getUserId1().equals(loginUserId) && !successfulMatch.getUserId2().equals(loginUserId))) {
             throw new IllegalArgumentException("你没有权限对该比赛进行删除");
         }
