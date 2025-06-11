@@ -273,6 +273,33 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public PageBean<MatchComment> getMatchCommentsByUsername1AndMatchId(Integer pageNum, Integer pageSize, String username1, Integer matchId) {
+        PageBean<MatchComment> pb = new PageBean<>();
+        PageHelper.startPage(pageNum, pageSize);
+        User user1 = userMapper.findByUserName(username1);
+        Integer userId= user1.getId();
+        List<MatchComment> comments = matchCommentMapper.getCommentsByUsername1AndMatchId(username1, matchId);
+
+        for(MatchComment matchComment:comments){
+            // 添加对手用户名和场馆名字
+            SuccessfulMatch successfulMatch = successfulMatchMapper.findById(matchComment.getMatchId());
+            User opponent;
+            if(userId.equals(successfulMatch.getUserId1())){
+                opponent = userMapper.findByUserId(successfulMatch.getUserId2());
+            }else {
+                opponent = userMapper.findByUserId(successfulMatch.getUserId1());
+            }
+            matchComment.setOpponentName(opponent.getUsername());
+            matchComment.setVenueName(venueMapper.findById(successfulMatch.getVenueId()).getName());
+        }
+
+        PageInfo<MatchComment> pageInfo = new PageInfo<>(comments);
+        pb.setTotal(pageInfo.getTotal());
+        pb.setItems(comments);
+        return pb;
+    }
+
+    @Override
     public PageBean<MatchComment> getAllMatchComments(Integer pageNum, Integer pageSize) {
         PageBean<MatchComment> pb = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);

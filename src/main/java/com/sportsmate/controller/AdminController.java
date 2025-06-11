@@ -239,6 +239,9 @@ public class AdminController {
             } else if (username1 != null && username2 != null && matchId == null) {
                 // 通过 username1 和 username2 查询两个用户一起打过的所有比赛的对应所有的比赛评论
                 pb = adminService.getMatchCommentsByUsername1AndUsername2(pageNum, pageSize, username1, username2);
+            }
+              else if(username1 != null && username2 == null && matchId != null){
+                  pb = adminService.getMatchCommentsByUsername1AndMatchId(pageNum, pageSize, username1,matchId);
             } else {
                 // 没有参数则返回所有 matchcomments
                 pb = adminService.getAllMatchComments(pageNum, pageSize);

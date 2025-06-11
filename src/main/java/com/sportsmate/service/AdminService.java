@@ -38,6 +38,7 @@ public interface AdminService {
     PageBean<MatchComment> getMatchCommentsByMatchId(Integer pageNum, Integer pageSize, Integer match_id);
     PageBean<MatchComment> getMatchCommentsByUsername1AndUsername2(Integer pageNum, Integer pageSize, String username1, String username2);
     PageBean<MatchComment> getAllMatchComments(Integer pageNum, Integer pageSize);
+    PageBean<MatchComment> getMatchCommentsByUsername1AndMatchId(Integer pageNum, Integer pageSize, String username1, Integer matchId);
 
     // 筛选reservationComment 接口
     PageBean<ReservationComment> getReservationCommentsByUsername(Integer pageNum, Integer pageSize, String username);

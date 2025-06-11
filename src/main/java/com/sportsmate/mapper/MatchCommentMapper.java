@@ -100,4 +100,9 @@ public interface MatchCommentMapper {
     @Select("SELECT * FROM comment WHERE match_id IN (SELECT id FROM successful_matches WHERE venue_id = #{venueId})")
     List<MatchComment> getCommentsByVenueId(Integer venueId);
 
-}
+    @Results({
+            @Result(property = "opponentRating", column = "opponent_or_coach_rating"),
+            @Result(property = "venueRating", column = "venue_rating")
+    })
+    @Select("SELECT * FROM comment WHERE user_id = (SELECT id FROM users WHERE username = #{username1}) AND match_id = #{matchId}")
+    List<MatchComment> getCommentsByUsername1AndMatchId(String username1, Integer matchId);}
